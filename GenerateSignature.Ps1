@@ -14,7 +14,7 @@ $ADUser = $ADUserPath.GetDirectoryEntry()
 # Get the properties
 $displayName = $ADUser.DisplayName.Value
 $title = $ADUser.title.Value
-$eduLetters = $ADuser.info.Value
+
 $poBox = $ADUser.postOfficeBox.Value
 $street = $ADUser.streetaddress.Value
 $city = $ADUser.l.Value
@@ -23,19 +23,21 @@ $zipCode = $ADUser.postalCode.Value
 $telephone = $ADUser.TelephoneNumber.Value
 $homePhoneNumber = $ADUser.homePhone.Value
 $mobileNumber = $ADUser.mobile.Value
+$exAttribute1 = $ADUser.extensionAttribute1.Value
+$exAttribute2 = $ADUser.extensionAttribute2.Value
 $email = $ADUser.mail.Value
 
 # Build the HTML 
 $signature = 
 @"
-<div style="color: #470a68; font-family: Arial, Helvetica, sans-serif; font-size: 12"><b>{0} {1}</b><br>
-{2}</div><br>
+<div style="color: #470a68; font-family: Arial, Helvetica, sans-serif; font-size: 12"><b>{0} {1} {2}</b><br>
+{3}</div><br>
 
 <a href="http://www.gen2.ac.uk"><img src='https://www.gen2.ac.uk/images/logo_with_city_and_guilds.png' /></a><br><br>
 
-<div style="font-family: Arial, Helvetica, sans-serif; font-size: 12; color: #000"><b>{3}</b><br>
-{4},<br>
-{5}, {6}, {7}.<br><br>
+<div style="font-family: Arial, Helvetica, sans-serif; font-size: 12; color: #000"><b>{4}</b><br>
+{5},<br>
+{6}, {7}, {8}.<br><br>
 
 <p><table border="0" style="font-family: Arial, Helvetica, sans-serif; font-size: 12; color: #000">
     <tr>
@@ -43,10 +45,10 @@ $signature =
             t:
         </td>
         <td>
-            {8}
+            {9}
         </td>
     </tr>
-"@ -f $displayname, $eduLetters, $title, $poBox, $street, $city, $state, $zipCode, $telephone
+"@ -f $exAttribute1, $displayname, $exAttribute2, $title, $poBox, $street, $city, $state, $zipCode, $telephone
 
 # Direct Dial
 if($homePhoneNumber)
