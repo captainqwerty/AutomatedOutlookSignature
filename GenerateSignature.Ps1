@@ -1,22 +1,17 @@
-# Antony Bragg
-# Updated to add Qual letters at end of name....
-# Create the signatures folder in %appdata%
+# Create the signatures folder and signature file
 $folderlocation = $Env:appdata + '\\Microsoft\\signatures'  
 mkdir $folderlocation -force
-
-# Setting the file name and location
 $Filename  = "$folderLocation\\signature.htm"
 
 # Getting Active Directory information for current user
 $UserName = $env:username
-
 $Filter = "(&(objectCategory=User)(samAccountName=$UserName))" 
 $Searcher = New-Object System.DirectoryServices.DirectorySearcher 
 $Searcher.Filter = $Filter 
 $ADUserPath = $Searcher.FindOne() 
 $ADUser = $ADUserPath.GetDirectoryEntry()
 
-# Set properties
+# Get the properties
 $displayName = $ADUser.DisplayName.Value
 $title = $ADUser.title.Value
 $eduLetters = $ADuser.info.Value
@@ -30,7 +25,7 @@ $homePhoneNumber = $ADUser.homePhone.Value
 $mobileNumber = $ADUser.mobile.Value
 $email = $ADUser.mail.Value
 
-# Build the HTML file
+# Build the HTML 
 $signature = 
 @"
 <div style="color: #470a68; font-family: Arial, Helvetica, sans-serif; font-size: 12"><b>{0} {1}</b><br>
@@ -106,16 +101,8 @@ $signature = $signature +
 
 "@ -f $email
 
+# Save the HTML to the signature file
 $signature | out-file $Filename -encoding ascii
-
-# Setting the regkeys for Outlook 2013
-if (test-path "HKCU:\\Software\\Microsoft\\Office\\15.0\\Common\\General") 
-{
-    get-item -path HKCU:\\Software\\Microsoft\\Office\\16.0\\Common\\General | new-Itemproperty -name Signatures -value signatures -propertytype string -force
-    get-item -path HKCU:\\Software\\Microsoft\\Office\\16.0\\Common\\MailSettings | new-Itemproperty -name NewSignature -value signature -propertytype string -force
-    get-item -path HKCU:\\Software\\Microsoft\\Office\\16.0\\Common\\MailSettings | new-Itemproperty -name ReplySignature -value signature -propertytype string -force
-    Remove-ItemProperty -Path HKCU:\\Software\\Microsoft\\Office\\16.0\\Outlook\\Setup -Name "First-Run"
-}
 
 # Setting the regkeys for Outlook 2016
 if (test-path "HKCU:\\Software\\Microsoft\\Office\\16.0\\Common\\General") 
