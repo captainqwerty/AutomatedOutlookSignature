@@ -1,7 +1,7 @@
 # AutomatedOutlookSignature
-PowerShell script to automate the creation of Outlook signatures using Active Directory.
+PowerShell script to automate the creation of Outlook signatures using Active Directory.  Currently tested on and working with Outlook 2016 and 2019.
 
-The follow details should be filled out in active directory:
+The follow details are used from Active Directory:
 
 | AD Field  | Contents |
 | ------------- | ------------- |
