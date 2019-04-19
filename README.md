@@ -12,8 +12,6 @@ The follow details are used from Active Directory:
 | Home | The users direct dial number (can be blank) |
 | Pager | The users extension (can be blank) |
 | Mobile | The users mobile number (can be blank) |
-| ExtensionAttribute1 | Any prefix such as Dr (can be blank) |
-| ExtensionAttribute2 | Any qualification letters that need to follow their name (can be blank) |
 | Street | Street address of users site |
 | P.O. Box | Site name which will appear in bold above the address e.g. Gen2 Head Office |
 | City | The site city/town |
