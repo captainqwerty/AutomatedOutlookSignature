@@ -39,7 +39,9 @@ $signature =
 
 <div style="font-family: Arial, Helvetica, sans-serif; font-size: 12; color: #000"><b>{4}</b><br>
 {6},<br>
-{7}, {8}, {9}.<br><br>
+{7},<br>
+{8},<br> 
+{9}<br><br>
 
 <p><table border="0" style="font-family: Arial, Helvetica, sans-serif; font-size: 12; color: #000">
     <tr>
