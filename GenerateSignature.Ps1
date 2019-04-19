@@ -1,13 +1,14 @@
 # GitHub: https://github.com/captainqwerty/AutomatedOutlookSignature 
 # Author: CaptainQwerty
 # Last Modified: 19/04/2019
+# Notes: Please refer to the ReadMe in the GitHub Repository for a detailed break down of this script.
 
-# Create the signatures folder and signature file - Do not alter this.
+# Create the signatures folder and signature file
 $folderlocation = $Env:appdata + '\\Microsoft\\signatures'  
 mkdir $folderlocation -force
 $Filename  = "$folderLocation\\signature.htm"
 
-# Getting Active Directory information for current user - Do not alter this.
+# Getting Active Directory information for current user
 $UserName = $env:username
 $Filter = "(&(objectCategory=User)(samAccountName=$UserName))" 
 $Searcher = New-Object System.DirectoryServices.DirectorySearcher 
@@ -15,49 +16,102 @@ $Searcher.Filter = $Filter
 $ADUserPath = $Searcher.FindOne() 
 $ADUser = $ADUserPath.GetDirectoryEntry()
 
-# Get the properties
-$displayName = $ADUser.DisplayName.Value # Display name which will likely be your users full name e.g. Barry Banderos
-$title = $ADUser.title.Value # This is their job title e.g. Finance Manager
-$poBox = $ADUser.postOfficeBox.Value # We use the PoBox value for our site names such as "Head Quarters" which is then displayed above the address in bold 
-$street = $ADUser.streetaddress.Value # Street address 
-$city = $ADUser.l.Value # City address
-$state = $aduser.st.Value # As we are in the UK we use this for county 
-$zipCode = $ADUser.postalCode.Value # Post code
-$telephone = $ADUser.TelephoneNumber.Value # We use this as our reception phone number
-$homePhoneNumber = $ADUser.homePhone.Value # We use this as the users direct dial (which can be blank and is handled later in the script if blank)
-$mobileNumber = $ADUser.mobile.Value # Mobile number for the user if they have one, again can be left blank.
-$exAttribute1 = $ADUser.extensionAttribute1.Value # Used if they have a prefix such as Dr before their name. Can be blank.
-$exAttribute2 = $ADUser.extensionAttribute2.Value # Used if they want to display qualification letters such as BSch(Hons) after their name. Can be blank.
-$email = $ADUser.mail.Value # Email address of the user
-$website = $ADUser.wWWHomePage.Value # or can comment this out if you do not use the web page field in AD and can use the below line to set the website statically
-#$website = "https://www.google.com"
-$logo = "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" # A public image file such as a PNG of the company logo in the correct dimensions
+# Get the users properties (These should always be in Active Directory and Unique)
+$displayName = $ADUser.DisplayName.Value
+$title = $ADUser.title.Value
+$homePhoneNumber = $ADUser.homePhone.Value
+$mobileNumber = $ADUser.mobile.Value
+$email = $ADUser.mail.Value 
+
+# These are details you can either get from Active directory or as they might be the same for your entire company could statically set them here. Each has a commented out static example, simply swap the commented lines and alter the example.
+$poBox = $ADUser.postOfficeBox.Value 
+$street = $ADUser.streetaddress.Value 
+$city = $ADUser.l.Value 
+$state = $aduser.st.Value 
+$zipCode = $ADUser.postalCode.Value
+$telephone = $ADUser.TelephoneNumber.Value
+$website = $ADUser.wWWHomePage.Value # Ensure that if you use this that the website is lead with http:// or https:// or the hyperlinks wont work
+$logo = "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png"
 
 # Build the HTML 
 $signature = 
 @"
-<div style="color: #470a68; font-family: Arial, Helvetica, sans-serif; font-size: 12"><b>{0} {1} {2}</b><br>
-{3}</div><br>
+<div style="color: #000; font-family: Arial, Helvetica, sans-serif; font-size: 12">
+<p>
+    <b>{0}</b><br>
+    {1}
+</p>
+<p>
+    <a href="{2}"><img src='{3}' /></a> 
+</p>
 
-<a href="{4}"><img src='{5}' /></a><br><br>
+"@ -f $displayname, $title, $website, $logo
 
+if($poBox)
+{
+$signature = $signature + 
+@"
 
-<div style="font-family: Arial, Helvetica, sans-serif; font-size: 12; color: #000"><b>{4}</b><br>
-{6},<br>
-{7},<br>
-{8},<br> 
-{9}<br><br>
+<b>{0}</b><br>
+"@ -f $poBox
+}
+
+if($street)
+{
+$signature = $signature + 
+@"
+
+{0},<br>
+"@ -f $street
+}
+
+if($city)
+{
+$signature = $signature + 
+@"
+
+{0},<br>
+"@ -f $city
+}
+
+if($state)
+{
+$signature = $signature + 
+@"
+
+{0},<br>
+"@ -f $state
+}
+
+if($zipCode)
+{
+$signature = $signature + 
+@"
+
+{0}<br>
+"@ -f $zipCode
+}
+
+$signature = $signature + 
+@"
 
 <p><table border="0" style="font-family: Arial, Helvetica, sans-serif; font-size: 12; color: #000">
+"@ 
+
+if($telephone)
+{
+$signature = $signature + 
+@"
     <tr>
         <td>
             t:
         </td>
         <td>
-            {10}
+            {0}
         </td>
     </tr>
-"@ -f $exAttribute1, $displayname, $exAttribute2, $title, $website, $logo, $poBox, $street, $city, $state, $zipCode, $telephone
+"@ -f $telephone
+} 
 
 # If homePhoneNumber is not blank it will be added (we use this field for our users Direct Dial numbers)
 if($homePhoneNumber)
@@ -91,28 +145,46 @@ if($mobileNumber)
 "@ -f $mobileNumber
 }
 
-# Finally the users email address and a link to your website is added to the bottom of the footer.
-$signature = $signature +
+# If email is not blank it will be added
+if($email)
+{
+    $signature = $signature + 
 @"
     <tr>
         <td>
             e:
         </td>
-         <td>
-                <a href="mailto:{0}">{0}</a>
+        <td>
+            <a href="mailto:{0}">{0}</a>
         </td>
     </tr>
+"@ -f $email
+}
+
+# if the website is not blank it will be added
+if($website)
+{
+$signature = $signature +
+@"
     <tr>
         <td>
             w:
         </td>
         <td>
-            <a href="{1}" style="color: #470a68; font-family: Arial, Helvetica, sans-serif; font-size: 12"><b>{1}</b></a>
+            <a href="{0}" style="color: #470a68; font-family: Arial, Helvetica, sans-serif; font-size: 12"><b>{0}</b></a>
         </td>
     </tr>
-</table></p><br>
+"@ -f $website
+}
 
-"@ -f $email, $website
+# Ends the table
+$signature = $signature +
+@"
+
+</table>
+</p>
+</div>
+"@
 
 # Save the HTML to the signature file
 $signature | out-file $Filename -encoding ascii
