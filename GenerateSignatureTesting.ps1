@@ -1,6 +1,7 @@
 # GitHub: https://github.com/captainqwerty/AutomatedOutlookSignature 
 # Author: CaptainQwerty
 # Last Modified: 19/04/2019
+# Notes: Please refer to the ReadMe in the GitHub Repository for a detailed break down of this script.
 
 # Create the signatures folder and signature file
 $folderlocation = $Env:appdata + '\\Microsoft\\signatures'  
@@ -20,8 +21,6 @@ $displayName = $ADUser.DisplayName.Value
 $title = $ADUser.title.Value
 $homePhoneNumber = $ADUser.homePhone.Value
 $mobileNumber = $ADUser.mobile.Value
-$exAttribute1 = $ADUser.extensionAttribute1.Value
-$exAttribute2 = $ADUser.extensionAttribute2.Value
 $email = $ADUser.mail.Value 
 
 # These are details you can either get from Active directory or as they might be the same for your entire company could statically set them here. Each has a commented out static example, simply swap the commented lines and alter the example.
@@ -37,11 +36,11 @@ $logo = "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_9
 # Build the HTML 
 $signature = 
 @"
-<div style="color: #470a68; font-family: Arial, Helvetica, sans-serif; font-size: 12"><b>{0} {1} {2}</b><br>
-{3}</div><br>
+<div style="color: #000; font-family: Arial, Helvetica, sans-serif; font-size: 12"><b>{0}</b><br>
+{1}</div><br>
 
-<a href="{4}"><img src='{5}' /></a><br><br>
-"@ -f $exAttribute1, $displayname, $exAttribute2, $title, $website, $logo
+<a href="{2}"><img src='{3}' /></a><br><br>
+"@ -f $displayname, $title, $website, $logo
 
 if($poBox)
 {
@@ -79,7 +78,7 @@ if($zipCode)
 {
 $signature = $signature + 
 @"
-{0},<br>
+{0}<br>
 "@ -f $zipCode
 }
 
@@ -152,6 +151,8 @@ if($email)
 }
 
 # if the website is not blank it will be added
+if($website)
+{
 $signature = $signature +
 @"
     <tr>
@@ -163,6 +164,7 @@ $signature = $signature +
         </td>
     </tr>
 "@ -f $website
+}
 
 # Ends the table
 $signature = $signature +
