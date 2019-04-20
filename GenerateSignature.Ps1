@@ -16,7 +16,7 @@ $Searcher.Filter = $Filter
 $ADUserPath = $Searcher.FindOne() 
 $ADUser = $ADUserPath.GetDirectoryEntry()
 
-# Get the users properties (These should always be in Active Directory and Unique)
+# Get the users properties (These should be unique per user and should not be static within this script although some are optional entirely) 
 $displayName = $ADUser.DisplayName.Value
 $jobTitle = $ADUser.title.Value
 $directDial = $ADUser.homePhone.Value
@@ -41,11 +41,18 @@ $signature =
     <b>{0}</b><br>
     {1}
 </p>
+"@ -f $displayname, $jobTitle
+
+if($website -and $logo)
+{
+$signature = $signature + 
+@"
 <p>
-    <a href="{2}"><img src='{3}' /></a> 
+    <a href="{0}"><img src='{1}' /></a> 
 </p>
 
-"@ -f $displayname, $jobTitle, $website, $logo
+"@ -f $website, $logo
+}
 
 if($poBox)
 {
