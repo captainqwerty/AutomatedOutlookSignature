@@ -1,4 +1,4 @@
-# Autoamted Outlook Signature Script
+# Automated Outlook Signature Script
 This PowerShell script can be used to automate the creation of Outlook signatures using Active Directory, it will also set this signature as the users default signature for new emails and email replies.  Currently tested on and working with Outlook 2016 and 2019.
 
 ### Active Directory
