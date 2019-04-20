@@ -34,3 +34,8 @@ I recommend using the script in Group Policy as a log-on script.  If you are una
 
 ### Why a Script and not Mail-Flow?
 The reason I decided to use a script rather than Mail-Flow rules in Exchange is the undesired affects that occurred when using Mail-Flow rules: our users didn’t like the fact they couldn’t see their signature while writing emails; it was near impossible to get the signature to be applied to reply emails without just being pinned to the bottom of the thread and; it would repeat the signature at the bottom of the email over and over again and if you used a rule to detect it and not put it on again you only got the one signature at the very bottom of the message thread and not in replies. 
+
+### Need help?
+If you require help with the script or would like assistance altering it more for your own environment please see my EduGeek thread on this script and feel free to comment on the thread or PM on EduGeek.
+
+[EduGeek Post](http://www.edugeek.net/forums/scripts/205976-outlook-email-signature-automation-ad-attributes.html#post1760284)
