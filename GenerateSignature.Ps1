@@ -18,8 +18,8 @@ $ADUser = $ADUserPath.GetDirectoryEntry()
 
 # Get the users properties (These should always be in Active Directory and Unique)
 $displayName = $ADUser.DisplayName.Value
-$title = $ADUser.title.Value
-$homePhoneNumber = $ADUser.homePhone.Value
+$jobTitle = $ADUser.title.Value
+$directDial = $ADUser.homePhone.Value
 $mobileNumber = $ADUser.mobile.Value
 $email = $ADUser.mail.Value 
 
@@ -45,7 +45,7 @@ $signature =
     <a href="{2}"><img src='{3}' /></a> 
 </p>
 
-"@ -f $displayname, $title, $website, $logo
+"@ -f $displayname, $jobTitle, $website, $logo
 
 if($poBox)
 {
@@ -114,7 +114,7 @@ $signature = $signature +
 } 
 
 # If homePhoneNumber is not blank it will be added (we use this field for our users Direct Dial numbers)
-if($homePhoneNumber)
+if($directDial)
 {
 $signature = $signature + 
 @"
@@ -126,7 +126,7 @@ $signature = $signature +
             {0}
         </td>
     </tr>
-"@ -f $homePhoneNumber
+"@ -f $directDial
 } 
 
 # If mobilenumber is not blank it will be added
