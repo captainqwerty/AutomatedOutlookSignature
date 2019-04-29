@@ -3,34 +3,32 @@
 # Last Modified: 19/04/2019
 # Notes: Please refer to the ReadMe in the GitHub Repository for a detailed break down of this script.
 
-# Create the signatures folder and signature file
-$folderlocation = $Env:appdata + '\\Microsoft\\signatures'  
-mkdir $folderlocation -force
-$Filename  = "$folderLocation\\signature.htm"
+# Create the signatures folder
+$folderlocation = $Env:appdata + '\\Microsoft\\signatures'
+
+if(!(Test-Path -Path $folderlocation )){
+    New-Item -ItemType directory -Path $folderlocation
+}
 
 # Getting Active Directory information for current user
 $UserName = $env:username
-$Filter = "(&(objectCategory=User)(samAccountName=$UserName))" 
-$Searcher = New-Object System.DirectoryServices.DirectorySearcher 
-$Searcher.Filter = $Filter 
-$ADUserPath = $Searcher.FindOne() 
-$ADUser = $ADUserPath.GetDirectoryEntry()
+$user = (([adsisearcher]"(&(objectCategory=User)(samaccountname=$UserName))").FindOne().Properties)
 
-# Get the users properties (These should be unique per user and should not be static within this script although some are optional entirely) 
-$displayName = $ADUser.DisplayName.Value
-$jobTitle = $ADUser.title.Value
-$directDial = $ADUser.homePhone.Value
-$mobileNumber = $ADUser.mobile.Value
-$email = $ADUser.mail.Value 
+# Get the users properties (These should always be in Active Directory and Unique)
+$displayName = $user.name
+$jobTitle = $user.title
+$directDial = $user.homephone
+$mobileNumber = $user.mobile
+$email = $user.mail
 
 # These are details you can either get from Active directory or as they might be the same for your entire company could statically set them here. Each has a commented out static example, simply swap the commented lines and alter the example.
-$poBox = $ADUser.postOfficeBox.Value 
-$street = $ADUser.streetaddress.Value 
-$city = $ADUser.l.Value 
-$state = $aduser.st.Value 
-$zipCode = $ADUser.postalCode.Value
-$telephone = $ADUser.TelephoneNumber.Value
-$website = $ADUser.wWWHomePage.Value # Ensure that if you use this that the website is lead with http:// or https:// or the hyperlinks wont work
+$poBox = $user.postofficebox
+$street = $user.streetaddress
+$city = $user.l
+$state = $user.st 
+$zipCode = $user.postalcode
+$telephone = $user.telephonenumber
+#$website = $ADUser.wWWHomePage.Value # Ensure that if you use this that the website is lead with http:// or https:// or the hyperlinks wont work
 $logo = "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png"
 
 # Build the HTML 
@@ -41,18 +39,11 @@ $signature =
     <b>{0}</b><br>
     {1}
 </p>
-"@ -f $displayname, $jobTitle
-
-if($website -and $logo)
-{
-$signature = $signature + 
-@"
 <p>
-    <a href="{0}"><img src='{1}' /></a> 
+    <a href="{2}"><img src='{3}' /></a> 
 </p>
 
-"@ -f $website, $logo
-}
+"@ -f $displayname, $jobTitle, $website, $logo
 
 if($poBox)
 {
@@ -194,6 +185,7 @@ $signature = $signature +
 "@
 
 # Save the HTML to the signature file
+$Filename  = "$folderLocation\\signature.htm"
 $signature | out-file $Filename -encoding ascii
 
 # Setting the regkeys for Outlook 2016
