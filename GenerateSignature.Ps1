@@ -28,7 +28,7 @@ $city = $user.l
 $state = $user.st 
 $zipCode = $user.postalcode
 $telephone = $user.telephonenumber
-#$website = $ADUser.wWWHomePage.Value # Ensure that if you use this that the website is lead with http:// or https:// or the hyperlinks wont work
+$website = $user.wwwhomepage # Ensure that if you use this that the website is lead with http:// or https:// or the hyperlinks wont work
 $logo = "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png"
 
 # Build the HTML 
