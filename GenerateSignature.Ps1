@@ -1,6 +1,6 @@
 # GitHub: https://github.com/captainqwerty/AutomatedOutlookSignature 
 # Author: CaptainQwerty
-# Last Modified: 19/04/2019
+# Last Modified: 29/04/2019
 # Notes: Please refer to the ReadMe in the GitHub Repository for a detailed break down of this script.
 
 # Create the signatures folder
@@ -15,20 +15,20 @@ $UserName = $env:username
 $user = (([adsisearcher]"(&(objectCategory=User)(samaccountname=$UserName))").FindOne().Properties)
 
 # Get the users properties (These should always be in Active Directory and Unique)
-$displayName = $user.name
-$jobTitle = $user.title
-$directDial = $user.homephone
-$mobileNumber = $user.mobile
-$email = $user.mail
+$displayName = $user.name[0]
+$jobTitle = $user.title[0]
+$directDial = $user.homephone[0]
+$mobileNumber = $user.mobile[0]
+$email = $user.mail[0]
 
 # These are details you can either get from Active directory or as they might be the same for your entire company could statically set them here. Each has a commented out static example, simply swap the commented lines and alter the example.
-$poBox = $user.postofficebox
-$street = $user.streetaddress
-$city = $user.l
-$state = $user.st 
-$zipCode = $user.postalcode
-$telephone = $user.telephonenumber
-$website = $user.wwwhomepage # Ensure that if you use this that the website is lead with http:// or https:// or the hyperlinks wont work
+$poBox = $user.postofficebox[0]
+$street = $user.streetaddress[0]
+$city = $user.l[0]
+$state = $user.st[0]
+$zipCode = $user.postalcode[0]
+$telephone = $user.telephonenumber[0]
+$website = $user.wwwhomepage[0] # Ensure that if you use this that the website is lead with http:// or https:// or the hyperlinks wont work
 $logo = "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png"
 
 # Build the HTML 
