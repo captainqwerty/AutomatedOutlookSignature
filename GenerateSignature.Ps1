@@ -1,6 +1,6 @@
 # GitHub: https://github.com/captainqwerty/AutomatedOutlookSignature 
 # Author: CaptainQwerty
-# Last Modified: 29/04/2019
+# Version: 2.0
 # Notes: Please refer to the ReadMe in the GitHub Repository for a detailed break down of this script.
 
 # Create the signatures folder
