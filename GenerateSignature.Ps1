@@ -35,152 +35,31 @@ $logo = "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_9
 $signature = 
 @"
 <div style="color: #000; font-family: Arial, Helvetica, sans-serif; font-size: 12">
-<p>
-    <b>$($displayName)</b><br>
-    $($jobTitle)
-</p>
-<p>
-    <a href="$($website)"><img src='$($logo)' /></a> 
-</p>
+    <p>
+        <b>$displayName</b><br>
+        $jobTitle
+    </p>
+    <p>
+        <a href="$website"><img src='$logo' /></a> 
+    </p>
 
-"@
+    <p>
+        $(if($poBox){"<b>"+$poBox+"</b><br>"})
+        $(if($street){ $street+",<br>"})
+        $(if($city){ $city+",<br>"})
+        $(if($state){ $state+",<br>"})
+        $(if($state){ $zipCode+"<br>"})
+    </p>
 
-if($poBox)
-{
-$signature = $signature + 
-@"
-
-<b>{0}</b><br>
-"@ -f $poBox
-}
-
-if($street)
-{
-$signature = $signature + 
-@"
-
-{0},<br>
-"@ -f $street
-}
-
-if($city)
-{
-$signature = $signature + 
-@"
-
-{0},<br>
-"@ -f $city
-}
-
-if($state)
-{
-$signature = $signature + 
-@"
-
-{0},<br>
-"@ -f $state
-}
-
-if($zipCode)
-{
-$signature = $signature + 
-@"
-
-{0}<br>
-"@ -f $zipCode
-}
-
-$signature = $signature + 
-@"
-
-<p><table border="0" style="font-family: Arial, Helvetica, sans-serif; font-size: 12; color: #000">
-"@ 
-
-if($telephone)
-{
-$signature = $signature + 
-@"
-    <tr>
-        <td>
-            t:
-        </td>
-        <td>
-            {0}
-        </td>
-    </tr>
-"@ -f $telephone
-} 
-
-# If homePhoneNumber is not blank it will be added (we use this field for our users Direct Dial numbers)
-if($directDial)
-{
-$signature = $signature + 
-@"
-    <tr>
-        <td>
-            dd:
-        </td>
-        <td>
-            {0}
-        </td>
-    </tr>
-"@ -f $directDial
-} 
-
-# If mobilenumber is not blank it will be added
-if($mobileNumber)
-{
-    $signature = $signature + 
-@"
-    <tr>
-        <td>
-            m:
-        </td>
-        <td>
-            {0}
-        </td>
-    </tr>
-"@ -f $mobileNumber
-}
-
-# If email is not blank it will be added
-if($email)
-{
-    $signature = $signature + 
-@"
-    <tr>
-        <td>
-            e:
-        </td>
-        <td>
-            <a href="mailto:{0}">{0}</a>
-        </td>
-    </tr>
-"@ -f $email
-}
-
-# if the website is not blank it will be added
-if($website)
-{
-$signature = $signature +
-@"
-    <tr>
-        <td>
-            w:
-        </td>
-        <td>
-            <a href="{0}" style="color: #470a68; font-family: Arial, Helvetica, sans-serif; font-size: 12"><b>{0}</b></a>
-        </td>
-    </tr>
-"@ -f $website
-}
-
-# Ends the table
-$signature = $signature +
-@"
-
-</table>
-</p>
+    <p>
+        <table border="0" style="font-family: Arial, Helvetica, sans-serif; font-size: 12; color: #000">
+            $(if($telephone){"<tr><td>t: </td><td>"+$telephone+"</td></tr>"})
+            $(if($directDial){"<tr><td>dd: </td><td>"+$directDial+"</td></tr>"})
+            $(if($mobileNumber){"<tr><td>m: </td><td>"+$mobileNumber+"</td></tr>"})
+            $(if($email){"<tr><td>w: </td><td><a href='mailto:$email'>"+$email+"</td></tr>"})
+            $(if($website){"<tr><td>e: </td><td><a href='$website'><b>"+$website+"</b></td></tr>"})
+        </table>
+    </p>
 </div>
 "@
 
