@@ -1,5 +1,5 @@
 # Automated Outlook Signature Script
-This PowerShell script can be used to automate the creation of Outlook signatures using Active Directory, it will also set this signature as the users default signature for new emails and email replies.  Currently tested on and working with Outlook 2016 and 2019.
+This PowerShell script can be used to automate the creation of Outlook signatures using Active Directory, it will also set this signature as the users default signature for new emails and email replies.  Currently tested on and working with Outlook 2010, 2016 and 2019.
 
 ### Active Directory
 To ensure users signatures are dynamic and when their job title changes, or their maiden name etc. are updated in Active Directory their Outlook signature will also be updated!
@@ -42,38 +42,39 @@ If you require help with the script or would like assistance altering it more fo
 The first part of the script ensures the Microsoft Signatures folder exists in the users %appdata% and sets the directory path and file name of the signature the script creates. 
 
 ```powershell
-$folderlocation = $Env:appdata + '\\Microsoft\\signatures'  
-mkdir $folderlocation -force
-$Filename  = "$folderLocation\\signature.htm"
+$folderlocation = $Env:appdata + '\\Microsoft\\signatures'
+
+if(!(Test-Path -Path $folderlocation )){
+    New-Item -ItemType directory -Path $folderlocation
+}
 ```
 
 Next we get the users username from their session and use the DirectorySearcher to search Active Directory for the user and store their account detials in the $ADUser variable.
 
 ```powershell
+# Getting Active Directory information for current user
 $UserName = $env:username
-$Filter = "(&(objectCategory=User)(samAccountName=$UserName))" 
-$Searcher = New-Object System.DirectoryServices.DirectorySearcher 
-$Searcher.Filter = $Filter 
-$ADUserPath = $Searcher.FindOne() 
-$ADUser = $ADUserPath.GetDirectoryEntry()
+$user = (([adsisearcher]"(&(objectCategory=User)(samaccountname=$UserName))").FindOne().Properties)
 ```
 
 The attributes from the $ADUser object are split into two sections.  The first section are the details which should be uniquie and would not be the same as any other member of staff such as their email address and the second half are attributes which could be the same for every member of staff such as the address details, these details can be either taken from active directory or could be set statically within the script. 
 
 ```powershell
-$displayName = $ADUser.DisplayName.Value
-$jobTitle = $ADUser.title.Value
-$directDial = $ADUser.homePhone.Value
-$mobileNumber = $ADUser.mobile.Value
-$email = $ADUser.mail.Value 
+# Get the users properties (These should always be in Active Directory and Unique)
+$displayName = $user.name[0]
+$jobTitle = $user.title[0]
+$directDial = $user.homephone[0]
+$mobileNumber = $user.mobile[0]
+$email = $user.mail[0]
 
-$poBox = $ADUser.postOfficeBox.Value 
-$street = $ADUser.streetaddress.Value 
-$city = $ADUser.l.Value 
-$state = $aduser.st.Value 
-$zipCode = $ADUser.postalCode.Value
-$telephone = $ADUser.TelephoneNumber.Value
-$website = $ADUser.wWWHomePage.Value
+# These are details you can either get from Active directory or as they might be the same for your entire company could statically set them here. Each has a commented out static example, simply swap the commented lines and alter the example.
+$poBox = $user.postofficebox[0]
+$street = $user.streetaddress[0]
+$city = $user.l[0]
+$state = $user.st[0]
+$zipCode = $user.postalcode[0]
+$telephone = $user.telephonenumber[0]
+$website = $user.wwwhomepage[0] # Ensure that if you use this that the website is lead with http:// or https:// or the hyperlinks wont work
 $logo = "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png"
 ```
 
@@ -83,159 +84,31 @@ The next part of the script gets fairly wordy.  This part is where the HTML file
 $signature = 
 @"
 <div style="color: #000; font-family: Arial, Helvetica, sans-serif; font-size: 12">
-<p>
-    <b>{0}</b><br>
-    {1}
-</p>
-"@ -f $displayname, $jobTitle
+    <p>
+        <b>$displayName</b><br>
+        $jobTitle
+    </p>
+    <p>
+        <a href="$website"><img src='$logo' /></a> 
+    </p>
 
-if($website -and $logo)
-{
-$signature = $signature + 
-@"
-<p>
-    <a href="{0}"><img src='{1}' /></a> 
-</p>
+    <p>
+        $(if($poBox){"<b>"+$poBox+"</b><br>"})
+        $(if($street){ $street+",<br>"})
+        $(if($city){ $city+",<br>"})
+        $(if($state){ $state+",<br>"})
+        $(if($state){ $zipCode+"<br>"})
+    </p>
 
-"@ -f $website, $logo
-}
-
-if($poBox)
-{
-$signature = $signature + 
-@"
-
-<b>{0}</b><br>
-"@ -f $poBox
-}
-
-if($street)
-{
-$signature = $signature + 
-@"
-
-{0},<br>
-"@ -f $street
-}
-
-if($city)
-{
-$signature = $signature + 
-@"
-
-{0},<br>
-"@ -f $city
-}
-
-if($state)
-{
-$signature = $signature + 
-@"
-
-{0},<br>
-"@ -f $state
-}
-
-if($zipCode)
-{
-$signature = $signature + 
-@"
-
-{0}<br>
-"@ -f $zipCode
-}
-
-$signature = $signature + 
-@"
-
-<p><table border="0" style="font-family: Arial, Helvetica, sans-serif; font-size: 12; color: #000">
-"@ 
-
-if($telephone)
-{
-$signature = $signature + 
-@"
-    <tr>
-        <td>
-            t:
-        </td>
-        <td>
-            {0}
-        </td>
-    </tr>
-"@ -f $telephone
-} 
-
-# If homePhoneNumber is not blank it will be added (we use this field for our users Direct Dial numbers)
-if($directDial)
-{
-$signature = $signature + 
-@"
-    <tr>
-        <td>
-            dd:
-        </td>
-        <td>
-            {0}
-        </td>
-    </tr>
-"@ -f $directDial
-} 
-
-# If mobilenumber is not blank it will be added
-if($mobileNumber)
-{
-    $signature = $signature + 
-@"
-    <tr>
-        <td>
-            m:
-        </td>
-        <td>
-            {0}
-        </td>
-    </tr>
-"@ -f $mobileNumber
-}
-
-# If email is not blank it will be added
-if($email)
-{
-    $signature = $signature + 
-@"
-    <tr>
-        <td>
-            e:
-        </td>
-        <td>
-            <a href="mailto:{0}">{0}</a>
-        </td>
-    </tr>
-"@ -f $email
-}
-
-# if the website is not blank it will be added
-if($website)
-{
-$signature = $signature +
-@"
-    <tr>
-        <td>
-            w:
-        </td>
-        <td>
-            <a href="{0}" style="color: #470a68; font-family: Arial, Helvetica, sans-serif; font-size: 12"><b>{0}</b></a>
-        </td>
-    </tr>
-"@ -f $website
-}
-
-# Ends the table
-$signature = $signature +
-@"
-
-</table>
-</p>
+    <p>
+        <table border="0" style="font-family: Arial, Helvetica, sans-serif; font-size: 12; color: #000">
+            $(if($telephone){"<tr><td>t: </td><td>"+$telephone+"</td></tr>"})
+            $(if($directDial){"<tr><td>dd: </td><td>"+$directDial+"</td></tr>"})
+            $(if($mobileNumber){"<tr><td>m: </td><td>"+$mobileNumber+"</td></tr>"})
+            $(if($email){"<tr><td>w: </td><td><a href='mailto:$email'>"+$email+"</td></tr>"})
+            $(if($website){"<tr><td>e: </td><td><a href='$website'><b>"+$website+"</b></td></tr>"})
+        </table>
+    </p>
 </div>
 "@
 
@@ -244,17 +117,29 @@ $signature = $signature +
 Now the $signature variable is populated with the HTML required it is output to the directory created earlier with the filename specified. 
 
 ```powershell
+# Save the HTML to the signature file
+$Filename  = "$folderLocation\\signature.htm"
 $signature | out-file $Filename -encoding ascii
 ```
 
 Finally the required registry keys are created and one is removed.  This helps ensure that if the user creates their own signature, each time the script is ran the automated signature will be used.
 
 ```powershell
+# Setting the regkeys for Outlook 2016
 if (test-path "HKCU:\\Software\\Microsoft\\Office\\16.0\\Common\\General") 
 {
     get-item -path HKCU:\\Software\\Microsoft\\Office\\16.0\\Common\\General | new-Itemproperty -name Signatures -value signatures -propertytype string -force
     get-item -path HKCU:\\Software\\Microsoft\\Office\\16.0\\Common\\MailSettings | new-Itemproperty -name NewSignature -value signature -propertytype string -force
     get-item -path HKCU:\\Software\\Microsoft\\Office\\16.0\\Common\\MailSettings | new-Itemproperty -name ReplySignature -value signature -propertytype string -force
     Remove-ItemProperty -Path HKCU:\\Software\\Microsoft\\Office\\16.0\\Outlook\\Setup -Name "First-Run"
+}
+
+# Setting the regkeys for Outlook 2010 - Thank you AJWhite1970 for the 2010 registry keys
+if (test-path "HKCU:\\Software\\Microsoft\\Office\\14.0\\Common\\General") 
+{
+    get-item -path HKCU:\\Software\\Microsoft\\Office\\14.0\\Common\\ General | new-Itemproperty -name Signatures -value signatures -propertytype string -force
+    get-item -path HKCU:\\Software\\Microsoft\\Office\\14.0\\Common\\ MailSettings | new-Itemproperty -name NewSignature -value signature -propertytype string -force
+    get-item -path HKCU:\\Software\\Microsoft\\Office\\14.0\\Common\\ MailSettings | new-Itemproperty -name ReplySignature -value signature -propertytype string -force
+    Remove-ItemProperty -Path HKCU:\\Software\\Microsoft\\Office\\14.0\\Outlook\ \Setup -Name "First-Run"
 }
 ```
