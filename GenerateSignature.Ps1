@@ -36,14 +36,14 @@ $signature =
 @"
 <div style="color: #000; font-family: Arial, Helvetica, sans-serif; font-size: 12">
 <p>
-    <b>{0}</b><br>
-    {1}
+    <b>$($displayName)</b><br>
+    $($jobTitle)
 </p>
 <p>
-    <a href="{2}"><img src='{3}' /></a> 
+    <a href="$($website)"><img src='$($logo)' /></a> 
 </p>
 
-"@ -f $displayname, $jobTitle, $website, $logo
+"@
 
 if($poBox)
 {
