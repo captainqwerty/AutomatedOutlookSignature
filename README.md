@@ -1,10 +1,12 @@
 # Automated Outlook Signature Script
-This PowerShell script can be used to automate the creation of Outlook signatures using Active Directory, it will also set this signature as the users default signature for new emails and email replies.  Currently tested on and working with Outlook 2010, 2016 and 2019.
+This PowerShell script is used to automate the creation of Outlook signatures using user information from Active Directory.  The script also sets this signature as the user's default signature for new emails and email replies.  
+
+Currently tested on and working with Outlook 2010, 2016 and 2019.
 
 ### Active Directory
-To ensure users signatures are dynamic and when their job title changes, or their maiden name etc. are updated in Active Directory their Outlook signature will also be updated!
+The signatures are dynamic and when the users job title or their maiden name etc. are updated in Active Directory their Outlook signature will also be updated!  A selection of Active Directory attribute are already configured in the script and listed below however more attributes can be easily added. 
 
-The follow details are used from Active Directory:
+The follow details are used from Active Directory within the script:
 
 | Variable in Script | AD Field  | Notes | Optional |
 |-------------| ------------- | ------------- | ------------- |
@@ -39,7 +41,7 @@ If you require help with the script or would like assistance altering it more fo
 
 ### The Script
 
-The first part of the script ensures the Microsoft Signatures folder exists in the users %appdata% and sets the directory path and file name of the signature the script creates. 
+The first part of the script ensures the Microsoft Signatures folder exists in the users %appdata% and sets the directory path. 
 
 ```powershell
 $folderlocation = $Env:appdata + '\\Microsoft\\signatures'
@@ -49,7 +51,7 @@ if(!(Test-Path -Path $folderlocation )){
 }
 ```
 
-Next we get the users username from their session and use the DirectorySearcher to search Active Directory for the user and store their account detials in the $ADUser variable.
+Next we get the users username from their session and use the DirectorySearcher to search Active Directory for the user and store their account detials in the $user variable.
 
 ```powershell
 # Getting Active Directory information for current user
@@ -57,7 +59,7 @@ $UserName = $env:username
 $user = (([adsisearcher]"(&(objectCategory=User)(samaccountname=$UserName))").FindOne().Properties)
 ```
 
-The attributes from the $ADUser object are split into two sections.  The first section are the details which should be uniquie and would not be the same as any other member of staff such as their email address and the second half are attributes which could be the same for every member of staff such as the address details, these details can be either taken from active directory or could be set statically within the script. 
+The attributes from the $user object are split into two sections.  The first section are the details which should be unique and would not be the same as any other member of staff such as their email address and the second half are attributes which could be the same for every member of staff such as the address details, these details can be either taken from active directory or could be set statically within the script. 
 
 ```powershell
 # Get the users properties (These should always be in Active Directory and Unique)
@@ -111,7 +113,6 @@ $signature =
     </p>
 </div>
 "@
-
 ```
 
 Now the $signature variable is populated with the HTML required it is output to the directory created earlier with the filename specified. 
