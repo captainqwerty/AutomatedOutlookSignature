@@ -56,8 +56,8 @@ $signature =
             $(if($telephone){"<tr><td>t: </td><td>"+$telephone+"</td></tr>"})
             $(if($directDial){"<tr><td>dd: </td><td>"+$directDial+"</td></tr>"})
             $(if($mobileNumber){"<tr><td>m: </td><td>"+$mobileNumber+"</td></tr>"})
-            $(if($email){"<tr><td>w: </td><td><a href='mailto:$email'>"+$email+"</td></tr>"})
-            $(if($website){"<tr><td>e: </td><td><a href='$website'><b>"+$website+"</b></td></tr>"})
+            $(if($email){"<tr><td>e: </td><td><a href='mailto:$email'>"+$email+"</td></tr>"})
+            $(if($website){"<tr><td>w: </td><td><a href='$website'><b>"+$website+"</b></td></tr>"})
         </table>
     </p>
 </div>
