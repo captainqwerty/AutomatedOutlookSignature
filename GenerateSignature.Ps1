@@ -3,6 +3,9 @@
 # Version: 2.0
 # Notes: Please refer to the ReadMe in the GitHub Repository for a detailed break down of this script.
 
+# Check the domain is contactable
+
+
 # Create the signatures folder
 $folderlocation = $Env:appdata + '\\Microsoft\\signatures'
 
@@ -29,6 +32,7 @@ $state = $user.st[0]
 $zipCode = $user.postalcode[0]
 $telephone = $user.telephonenumber[0]
 $website = $user.wwwhomepage[0] # Ensure that if you use this that the website is lead with http:// or https:// or the hyperlinks wont work
+
 $logo = "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png"
 
 # Build the HTML 
@@ -40,14 +44,16 @@ $signature =
         $jobTitle
     </p>
     <p>
-        <a href="$website"><img src='$logo' /></a> 
+    $(if($website -And $logo){"<a href="+$website+">"})
+        $(if($logo){"<img src='$logo' />"})
+    $(if($website -And $logo){"</a>"})
     </p>
 
     <p>
         $(if($poBox){"<b>"+$poBox+"</b><br>"})
-        $(if($street){ $street+",<br>"})
-        $(if($city){ $city+",<br>"})
-        $(if($state){ $state+",<br>"})
+        $(if($street){ $street+"<br>"})
+        $(if($city){ $city+"<br>"})
+        $(if($state){ $state+"<br>"})
         $(if($state){ $zipCode+"<br>"})
     </p>
 
