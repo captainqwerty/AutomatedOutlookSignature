@@ -4,8 +4,10 @@
 # Notes: Please refer to the ReadMe in the GitHub Repository for a detailed break down of this script.
 
 # Check the domain is contactable
+$domainControllers = [DirectoryServices.ActiveDirectory.Domain]::GetCurrentDomain().DomainControllers
 
-
+if($domainControllers)
+{
 # Create the signatures folder
 $folderlocation = $Env:appdata + '\\Microsoft\\signatures'
 
@@ -72,6 +74,7 @@ $signature =
 # Save the HTML to the signature file
 $Filename  = "$folderLocation\\signature.htm"
 $signature | out-file $Filename -encoding ascii
+}
 
 # Setting the regkeys for Outlook 2016
 if (test-path "HKCU:\\Software\\Microsoft\\Office\\16.0\\Common\\General") 
