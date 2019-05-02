@@ -21,15 +21,13 @@ The follow details are used from Active Directory within the script:
 | $city | City | City / Town | Yes |
 | $state | State/Province | State / County | Yes |
 | $zipCode | Zip/Postal Code | Post Code / Zip Code | Yes |
-| $website | Website | Website address | Yes* |
+| $website | Website | Website address | Yes |
 
 Additional variables that do not rely on Active Directory
 
 | Variable in Script | Usage | Optional |
 |-------------| ------------- | ------------- |
-| $logo | Variable containing the URL of a image to use as a logo in the signature | Yes* |
-
-\* If either the logo or the website variable are blank currently this will stop the logo showing.  The next version will not have this restriction.
+| $logo | Variable containing the URL of a image to use as a logo in the signature | Yes |
 
 ### How to use this script
 I recommend using the script in Group Policy as a log-on script.  If you are unaware of how to do this rather than reinvent the wheel explain here I shall point you to this article :) - [Configuring Logon PowerShell Scripts with Group Policy - 4Sysops](https://4sysops.com/archives/configuring-logon-powershell-scripts-with-group-policy/)
