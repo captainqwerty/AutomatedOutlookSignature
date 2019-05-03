@@ -28,6 +28,7 @@ $city = $user.l[0]
 $state = $user.st[0]
 $zipCode = $user.postalcode[0]
 $telephone = $user.telephonenumber[0]
+$office = $user.physicaldeliveryofficename
 $website = $user.wwwhomepage[0] # Ensure that if you use this that the website is lead with http:// or https:// or the hyperlinks wont work
 
 $logo = "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png"
