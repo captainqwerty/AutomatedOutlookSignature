@@ -21,6 +21,7 @@ The follow details are used from Active Directory within the script:
 | $city | City | City / Town | Yes |
 | $state | State/Province | State / County | Yes |
 | $zipCode | Zip/Postal Code | Post Code / Zip Code | Yes |
+| $office | physicaldeliveryofficename | Office | Yes |
 | $website | Website | Website address | Yes |
 
 Additional variables that do not rely on Active Directory
