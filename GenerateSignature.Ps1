@@ -52,7 +52,7 @@ $signature =
         $(if($street){ $street+"<br>"})
         $(if($city){ $city+"<br>"})
         $(if($state){ $state+"<br>"})
-        $(if($state){ $zipCode+"<br>"})
+        $(if($zipcode){ $zipCode+"<br>"})
     </p>
 
     <p>
