@@ -5,6 +5,7 @@
 
 # Create the signatures folder
 $folderlocation = $Env:appdata + '\\Microsoft\\signatures'
+$filename = "signature"
 
 if(!(Test-Path -Path $folderlocation )){
     New-Item -ItemType directory -Path $folderlocation
@@ -33,6 +34,15 @@ $website = $user.wwwhomepage[0] # Ensure that if you use this that the website i
 
 $logo = "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png"
 
+# Checking for group membership
+$Group = [ADSI]"LDAP://cn=IT Staff,OU=Groups,DC=Example,DC=co,DC=uk"
+
+$Group.Member | ForEach-Object {
+if ($user.distinguishedname -match $_) {
+    $ITMember = $true
+    }
+}
+
 # Build the HTML 
 $signature = 
 @"
@@ -56,6 +66,7 @@ $signature =
     </p>
 
     <p>
+        $(if($ITMember){"For IT Helpdesk Call: 019201 20202993"})
         <table border="0" style="font-family: Arial, Helvetica, sans-serif; font-size: 12; color: #000">
             $(if($telephone){"<tr><td>t: </td><td>"+$telephone+"</td></tr>"})
             $(if($directDial){"<tr><td>dd: </td><td>"+$directDial+"</td></tr>"})
@@ -68,15 +79,15 @@ $signature =
 "@
 
 # Save the HTML to the signature file
-$Filename  = "$folderLocation\\signature.htm"
+$Filename  = "$folderLocation\\$filename.htm"
 $signature | out-file $Filename -encoding ascii
 
 # Setting the regkeys for Outlook 2016
 if (test-path "HKCU:\\Software\\Microsoft\\Office\\16.0\\Common\\General") 
 {
     get-item -path HKCU:\\Software\\Microsoft\\Office\\16.0\\Common\\General | new-Itemproperty -name Signatures -value signatures -propertytype string -force
-    get-item -path HKCU:\\Software\\Microsoft\\Office\\16.0\\Common\\MailSettings | new-Itemproperty -name NewSignature -value signature -propertytype string -force
-    get-item -path HKCU:\\Software\\Microsoft\\Office\\16.0\\Common\\MailSettings | new-Itemproperty -name ReplySignature -value signature -propertytype string -force
+    get-item -path HKCU:\\Software\\Microsoft\\Office\\16.0\\Common\\MailSettings | new-Itemproperty -name NewSignature -value $filename -propertytype string -force
+    get-item -path HKCU:\\Software\\Microsoft\\Office\\16.0\\Common\\MailSettings | new-Itemproperty -name ReplySignature -value $filename -propertytype string -force
     Remove-ItemProperty -Path HKCU:\\Software\\Microsoft\\Office\\16.0\\Outlook\\Setup -Name "First-Run"
 }
 
@@ -84,7 +95,7 @@ if (test-path "HKCU:\\Software\\Microsoft\\Office\\16.0\\Common\\General")
 if (test-path "HKCU:\\Software\\Microsoft\\Office\\14.0\\Common\\General") 
 {
     get-item -path HKCU:\\Software\\Microsoft\\Office\\14.0\\Common\\ General | new-Itemproperty -name Signatures -value signatures -propertytype string -force
-    get-item -path HKCU:\\Software\\Microsoft\\Office\\14.0\\Common\\ MailSettings | new-Itemproperty -name NewSignature -value signature -propertytype string -force
-    get-item -path HKCU:\\Software\\Microsoft\\Office\\14.0\\Common\\ MailSettings | new-Itemproperty -name ReplySignature -value signature -propertytype string -force
+    get-item -path HKCU:\\Software\\Microsoft\\Office\\14.0\\Common\\ MailSettings | new-Itemproperty -name NewSignature -value $filename -propertytype string -force
+    get-item -path HKCU:\\Software\\Microsoft\\Office\\14.0\\Common\\ MailSettings | new-Itemproperty -name ReplySignature -value $filename -propertytype string -force
     Remove-ItemProperty -Path HKCU:\\Software\\Microsoft\\Office\\14.0\\Outlook\\Setup -Name "First-Run"
 }
