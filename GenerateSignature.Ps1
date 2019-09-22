@@ -1,7 +1,21 @@
-# GitHub: https://github.com/captainqwerty/AutomatedOutlookSignature 
-# Author: CaptainQwerty
-# Version: 2.0
-# Notes: Please refer to the ReadMe in the GitHub Repository for a detailed break down of this script.
+<#
+.SYNOPSIS
+  Dynamic Outlook Signature Creation - https://github.com/captainqwerty/AutomatedOutlookSignature
+.DESCRIPTION
+  This script uses properties from ActiveDirectory to populate the HTM which is then stored in the $folderlocation with the name $filename.htm. 
+  The script can be ran as either a scheduled task at logon or preferably a Group Policy Logon script, more details on this can be found in the GitHub ReadMe.
+  The script uses if statements to ensure if a user, for example, doesn't have a mobile number then that entire section of the signature is not uncluded, this makes the signature look much more professional and 
+  if the user is given a mobile number, at next logon it will be added to their signature. 
+  The script can also add parts based on group membership. 
+.INPUTS
+  Several properties for the user are taken directly from Active Directory, for more details on this please see the ReadMe on GitHub.
+.OUTPUTS
+  $folderlocation\$filename.htm
+.NOTES
+  Version:        2.1
+  Author:         CaptainQwerty
+  Modified:       22/09/2019
+#>
 
 # Create the signatures folder
 $folderlocation = $Env:appdata + '\\Microsoft\\signatures'
@@ -22,7 +36,9 @@ $directDial = $user.homephone[0]
 $mobileNumber = $user.mobile[0]
 $email = $user.mail[0]
 
-# These are details you can either get from Active directory or as they might be the same for your entire company could statically set them here. Each has a commented out static example, simply swap the commented lines and alter the example.
+<# 
+These are details you can either get from Active directory or as they might be the same for your entire company could statically set them here. 
+#>
 $poBox = $user.postofficebox[0]
 $street = $user.streetaddress[0]
 $city = $user.l[0]
@@ -30,8 +46,9 @@ $state = $user.st[0]
 $zipCode = $user.postalcode[0]
 $telephone = $user.telephonenumber[0]
 $office = $user.physicaldeliveryofficename
-$website = $user.wwwhomepage[0] # Ensure that if you use this that the website is lead with http:// or https:// or the hyperlinks wont work
+$website = $user.wwwhomepage[0] # Must include https:// or http:// or the hyperlinks will not function.
 
+# Please note that if you do include a logo it must be located somewhere on the internet that the public has access to, many users upload it to their website.
 $logo = "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png"
 
 # Checking for group membership
@@ -43,7 +60,7 @@ if ($user.distinguishedname -match $_) {
     }
 }
 
-# Build the HTML 
+# Building HTML
 $signature = 
 @"
 <div style="color: #000; font-family: Arial, Helvetica, sans-serif; font-size: 12">
@@ -88,7 +105,7 @@ if (test-path "HKCU:\\Software\\Microsoft\\Office\\16.0\\Common\\General")
     get-item -path HKCU:\\Software\\Microsoft\\Office\\16.0\\Common\\General | new-Itemproperty -name Signatures -value signatures -propertytype string -force
     get-item -path HKCU:\\Software\\Microsoft\\Office\\16.0\\Common\\MailSettings | new-Itemproperty -name NewSignature -value $filename -propertytype string -force
     get-item -path HKCU:\\Software\\Microsoft\\Office\\16.0\\Common\\MailSettings | new-Itemproperty -name ReplySignature -value $filename -propertytype string -force
-    Remove-ItemProperty -Path HKCU:\\Software\\Microsoft\\Office\\16.0\\Outlook\\Setup -Name "First-Run"
+    Remove-ItemProperty -Path HKCU:\\Software\\Microsoft\\Office\\16.0\\Outlook\\Setup -Name "First-Run" -ErrorAction silentlycontinue
 }
 
 # Setting the regkeys for Outlook 2010 - Thank you AJWhite1970 for the 2010 registry keys
@@ -97,5 +114,5 @@ if (test-path "HKCU:\\Software\\Microsoft\\Office\\14.0\\Common\\General")
     get-item -path HKCU:\\Software\\Microsoft\\Office\\14.0\\Common\\ General | new-Itemproperty -name Signatures -value signatures -propertytype string -force
     get-item -path HKCU:\\Software\\Microsoft\\Office\\14.0\\Common\\ MailSettings | new-Itemproperty -name NewSignature -value $filename -propertytype string -force
     get-item -path HKCU:\\Software\\Microsoft\\Office\\14.0\\Common\\ MailSettings | new-Itemproperty -name ReplySignature -value $filename -propertytype string -force
-    Remove-ItemProperty -Path HKCU:\\Software\\Microsoft\\Office\\14.0\\Outlook\\Setup -Name "First-Run"
+    Remove-ItemProperty -Path HKCU:\\Software\\Microsoft\\Office\\14.0\\Outlook\\Setup -Name "First-Run" -ErrorAction silentlycontinue
 }
