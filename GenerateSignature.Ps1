@@ -30,33 +30,32 @@ $UserName = $env:username
 $user = (([adsisearcher]"(&(objectCategory=User)(samaccountname=$UserName))").FindOne().Properties)
 
 # Get the users properties (These should always be in Active Directory and Unique)
-$displayName = $user.name[0]
-$jobTitle = $user.title[0]
-$directDial = $user.homephone[0]
-$mobileNumber = $user.mobile[0]
-$email = $user.mail[0]
+if($user.name.count -gt 0){$displayName = $user.name[0]}
+if($user.title.count -gt 0){$jobTitle = $user.title[0]}
+if($user.homephone.count -gt 0){$directDial = $user.homephone[0]}
+if($user.mobile.count -gt 0){$mobileNumber = $user.mobile[0]}
+if($user.mail.count -gt 0){$email = $user.mail[0]}
 
 <# 
 These are details you can either get from Active directory or as they might be the same for your entire company could statically set them here. 
 #>
-$poBox = $user.postofficebox[0]
-$street = $user.streetaddress[0]
-$city = $user.l[0]
-$state = $user.st[0]
-$zipCode = $user.postalcode[0]
-$telephone = $user.telephonenumber[0]
-$office = $user.physicaldeliveryofficename
-$website = $user.wwwhomepage[0] # Must include https:// or http:// or the hyperlinks will not function.
+if($user.postofficebox.count -gt 0){$poBox = $user.postofficebox[0]}
+if($user.streetaddress.count -gt 0){$street = $user.streetaddress[0]}
+if($user.l.count -gt 0){$city = $user.l[0]}
+if($user.st.count -gt 0){$state = $user.st[0]}
+if($user.postalcode.count -gt 0){$zipCode = $user.postalcode[0]}
+if($user.telephonenumber.count -gt 0){$telephone = $user.telephonenumber[0]}
+if($user.physicaldeliveryofficename.count -gt 0){$office = $user.physicaldeliveryofficename}
+if($user.wwwhomepage.count -gt 0){$website = $user.wwwhomepage[0]} # Must include https:// or http:// or the hyperlinks will not function.
 
 # Please note that if you do include a logo it must be located somewhere on the internet that the public has access to, many users upload it to their website.
 $logo = "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png"
 
-# Checking for group membership
+# Group Check Example
 $Group = [ADSI]"LDAP://cn=IT Staff,OU=Groups,DC=Example,DC=co,DC=uk"
-
 $Group.Member | ForEach-Object {
 if ($user.distinguishedname -match $_) {
-    $ITMember = $true
+      $ItStaff = $true
     }
 }
 
@@ -65,8 +64,8 @@ $signature =
 @"
 <div style="color: #000; font-family: Arial, Helvetica, sans-serif; font-size: 12">
     <p>
-        <b>$displayName</b><br>
-        $jobTitle
+        <b>$displayName</b>
+        $(if($poBox){"<b>"+$jobTitle})
     </p>
     <p>
     $(if($website -And $logo){"<a href="+$website+">"})
@@ -83,7 +82,7 @@ $signature =
     </p>
 
     <p>
-        $(if($ITMember){"For IT Helpdesk Call: 019201 20202993"})
+        $(if($ITStaff){"For IT Helpdesk Call: 019201 20202993"})
         <table border="0" style="font-family: Arial, Helvetica, sans-serif; font-size: 12; color: #000">
             $(if($telephone){"<tr><td>t: </td><td>"+$telephone+"</td></tr>"})
             $(if($directDial){"<tr><td>dd: </td><td>"+$directDial+"</td></tr>"})
