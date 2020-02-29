@@ -2,32 +2,34 @@
 .SYNOPSIS
   Dynamic Outlook Signature Creation - https://github.com/captainqwerty/AutomatedOutlookSignature
 .DESCRIPTION
-  This script uses properties from ActiveDirectory to populate the HTM which is then stored in the $folderlocation with the name $filename.htm. 
+  This script uses properties from ActiveDirectory to populate the .htm and .txt file which are then stored in the $folderlocation with the name $filename.htm and $filename.txt. 
   The script can be ran as either a scheduled task at logon or preferably a Group Policy Logon script, more details on this can be found in the GitHub ReadMe.
   The script uses if statements to ensure if a user, for example, doesn't have a mobile number then that entire section of the signature is not uncluded, this makes the signature look much more professional and 
   if the user is given a mobile number, at next logon it will be added to their signature. 
-  The script can also add parts based on group membership. 
+  The script can also add additional parts based on group membership, the example given in this script is being a member of IT Staff adds Helpdesk contact information. 
 .INPUTS
   Several properties for the user are taken directly from Active Directory, for more details on this please see the ReadMe on GitHub.
 .OUTPUTS
-  $folderlocation\$filename.htm
+  $folderlocation\$filename.htm - HTML signature for rich text emails
+  $folderlocation\$filename.txt - Text signautre for none rich text emails
 .NOTES
-  Version:        2.1
+  Version:        3.0
   Author:         CaptainQwerty
-  Modified:       22/09/2019
+  Modified:       29/02/2020
 #>
 
 # Create the signatures folder
 $folderlocation = $Env:appdata + '\\Microsoft\\signatures'
-$filename = "signature"
+$filename = "Signature"
 
 if(!(Test-Path -Path $folderlocation )){
     New-Item -ItemType directory -Path $folderlocation
 }
 
 # Getting Active Directory information for current user
-$UserName = $env:username
-$user = (([adsisearcher]"(&(objectCategory=User)(samaccountname=$UserName))").FindOne().Properties)
+$user = (([adsisearcher]"(&(objectCategory=User)(samaccountname=$env:username))").FindOne().Properties)
+
+$companyName = "Company Name"
 
 # Get the users properties (These should always be in Active Directory and Unique)
 if($user.name.count -gt 0){$displayName = $user.name[0]}
@@ -36,9 +38,8 @@ if($user.homephone.count -gt 0){$directDial = $user.homephone[0]}
 if($user.mobile.count -gt 0){$mobileNumber = $user.mobile[0]}
 if($user.mail.count -gt 0){$email = $user.mail[0]}
 
-<# 
-These are details you can either get from Active directory or as they might be the same for your entire company could statically set them here. 
-#>
+
+#These are details you can either get from Active directory or as they might be the same for your entire company could statically set them here. 
 if($user.postofficebox.count -gt 0){$poBox = $user.postofficebox[0]}
 if($user.streetaddress.count -gt 0){$street = $user.streetaddress[0]}
 if($user.l.count -gt 0){$city = $user.l[0]}
@@ -59,44 +60,103 @@ if ($user.distinguishedname -match $_) {
     }
 }
 
+# Building Style Sheet
+$style = 
+@"
+<style>
+p, table, td, tr, a, span { 
+    font-family: Arial, Helvetica, sans-serif;
+    font-size:  12pt;
+    color: #28b8ce;
+ }
+
+span.blue
+{
+    color: #28b8ce;
+}
+
+table {
+    margin: 0;
+    padding: 0;
+}
+
+a { 
+text-decoration: none;
+}
+
+hr {
+border: none;
+height: 1px;
+background-color: #28b8ce;
+color: #28b8ce;
+width: 700px;
+}
+
+table.main {
+    border-top: 1px solid #28b8ce;
+}
+</style>
+"@
+
 # Building HTML
 $signature = 
 @"
-<div style="color: #000; font-family: Arial, Helvetica, sans-serif; font-size: 12">
-    <p>
-        <b>$displayName</b>
-        $(if($poBox){"<b>"+$jobTitle})
-    </p>
-    <p>
-    $(if($website -And $logo){"<a href="+$website+">"})
-        $(if($logo){"<img src='$logo' />"})
-    $(if($website -And $logo){"</a>"})
-    </p>
+  $(if($displayName){"<span><b>"+$displayName+"</b></span><br />"})
+  $(if($jobTitle){"<span>"+$jobTitle+"</span><br /><br />"})
 
-    <p>
-        $(if($poBox){"<b>"+$poBox+"</b><br>"})
-        $(if($street){ $street+"<br>"})
-        $(if($city){ $city+"<br>"})
-        $(if($state){ $state+"<br>"})
-        $(if($zipcode){ $zipCode+"<br>"})
-    </p>
-
-    <p>
-        $(if($ITStaff){"For IT Helpdesk Call: 0191231 2123123123"})
-        <table border="0" style="font-family: Arial, Helvetica, sans-serif; font-size: 12; color: #000">
-            $(if($telephone){"<tr><td>t: </td><td>"+$telephone+"</td></tr>"})
-            $(if($directDial){"<tr><td>dd: </td><td>"+$directDial+"</td></tr>"})
-            $(if($mobileNumber){"<tr><td>m: </td><td>"+$mobileNumber+"</td></tr>"})
-            $(if($email){"<tr><td>e: </td><td><a href='mailto:$email'>"+$email+"</td></tr>"})
-            $(if($website){"<tr><td>w: </td><td><a href='$website'><b>"+$website+"</b></td></tr>"})
-        </table>
-    </p>
-</div>
+<p>
+  <table class='main'>
+      <tr>
+          <td style='padding-right: 75px;'>$(if($logo){"<img src='$logo' />"})</td>
+          <td>
+              <table>
+                  <tr><td colspan='2' style='padding-bottom: 10px;'>
+                    $(if($companyName){ "<b>"+$companyName+"</b><br />" })
+                    $(if($street){ $street+", " })
+                    $(if($city){ $city+", " })
+                    $(if($state){ $state+", " })
+                    $(if($zipCode){ $zipCode })
+                  </td></tr>
+                  $(if($ITMember){"<tr><td td colspan='2'>IT Helpdesk: 0188887 55555 6666</tr></td>"})
+                  $(if($telephone){"<tr><td>T: </td><td><a href='tel:$telephone'>$($telephone)</a></td></tr>"})
+                  $(if($mobileNumber){"<tr><td>M: </td><td><a href='tel:$mobileNumber'>$($mobileNumber)</a></td></tr>"})
+                  $(if($email){"<tr><td>E: </td><td><a href='mailto:$email'>$($email)</a></td></tr>"})
+                  $(if($website){"<tr><td>W: <a href='http://$website'>$($website)</a></td></tr>"})
+              </table>
+          </td>
+      </tr>
+  </table>
+</p>
+<br />
 "@
 
 # Save the HTML to the signature file
-$Filename  = "$folderLocation\\$filename.htm"
-$signature | out-file $Filename -encoding ascii
+$File  = "$folderLocation\\$filename.htm"
+$style + $signature | out-file $file -encoding ascii
+
+# Build the txt 
+$signature = 
+@"
+$(if($displayName){ $displayName })
+$(if($jobTitle){ $jobTitle })
+___________________________________________________________
+
+$(if($companyName){ $companyName })
+$(if($street){ $street+", " })
+$(if($city){ $city+", " })
+$(if($state){ $state+", " })
+$(if($zipCode){ $zipCode })
+
+$(if($ITMember){"For IT Helpdesk Call 0191231 212313"})
+$(if($telephone){"T: "+$telephone})
+$(if($mobileNumber){"M: "+$mobileNumber})
+$(if($email){"E: "+$email})
+$(if($website){"W: "+$website})
+"@
+
+# Output the text to the signatures folder
+$file  = "$folderLocation\\$filename.txt"
+$signature | out-file $file -encoding ascii
 
 # Setting the regkeys for Outlook 2016
 if (test-path "HKCU:\\Software\\Microsoft\\Office\\16.0\\Common\\General") 
