@@ -131,7 +131,7 @@ $signature =
 # Save the HTML to the signature file
 $style + $signature | out-file "$file.htm" -encoding ascii
 
-# Build the txt 
+# Build the txt version for none rich text emails
 $signature = 
 @"
 $(if($displayName){ $displayName })
