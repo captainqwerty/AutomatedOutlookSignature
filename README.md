@@ -30,7 +30,7 @@ Additional variables that do not rely on Active Directory
 
 | Variable in Script | Usage | Optional |
 |-------------| ------------- | ------------- |
-| $comapnyName | Variable containing the name of the company | Yes |
+| $companyName | Variable containing the name of the company | Yes |
 | $logo | Variable containing the URL of a image to use as a logo in the signature | Yes |
 
 ### How to use this script
