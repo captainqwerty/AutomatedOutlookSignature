@@ -16,15 +16,7 @@
   Modified:       07/12/2020
 #>
 
-$webEmailSignature = [ADSI]"LDAP://CN=All Staff,OU=Two Castles,DC=tcha1,DC=co,DC=uk"
-
-# $webEmailSignature.Member | ForEach-Object {
-#     $Searcher = [adsisearcher]"(distinguishedname=$_)"
-#     $user = $searcher.FindOne().Properties
-
-#     $user.mail[0]
-# }
-
+$webEmailSignature = [ADSI]"LDAP://CN=Outlook - Web Signature,OU=Groups,DC=Example,DC=co,DC=uk"
 
 $webEmailSignature.Member | ForEach-Object {
     $Searcher = [adsisearcher]"(distinguishedname=$_)"
@@ -33,49 +25,33 @@ $webEmailSignature.Member | ForEach-Object {
     if($user) {
         write-host "Setting siguture for" $user.name[0]
 
+        # Company name and logo
+        $companyName = "Company Name"
+        $logo = "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" # Please note that if you do include a logo it must be located somewhere on the internet that the public has access to, many users upload it to their website.
+
         # Get the users properties (These should always be in Active Directory and Unique)
-        $displayName = $user.name[0]
-        $jobTitle = $user.title[0]
-        $mobileNumber = $user.mobile[0]
-        $email = $user.mail[0]
-        $namePrefix = $user.extensionattribute1
-        $namePostfix = $user.extensionattribute2
+        if($user.name.count -gt 0){$displayName = $user.name[0]}
+        if($user.title.count -gt 0){$jobTitle = $user.title[0]}
+        if($user.homephone.count -gt 0){$directDial = $user.homephone[0]}
+        if($user.mobile.count -gt 0){$mobileNumber = $user.mobile[0]}
+        if($user.mail.count -gt 0){$email = $user.mail[0]}
+        if($user.wwwhomepage.count -gt 0){$website = $user.wwwhomepage[0]}
 
         # Address
-        $street = $user.streetaddress[0] # Street address
-        $city = $user.l[0] # City
-        $state = $user.st[0] # State
-        $zipCode = $user.postalcode[0] # Postcode 
-        $telephone = $user.telephonenumber[0] # Telephone number
-        $website = "www.castlesandcoasts.co.uk" # Website
-        $logo = "https://castlesandcoasts.co.uk/media/10509/email-logo.jpg" # Logo
+        if($user.postofficebox.count -gt 0){$poBox = $user.postofficebox[0]}
+        if($user.streetaddress.count -gt 0){$street = $user.streetaddress[0]}
+        if($user.l.count -gt 0){$city = $user.l[0]}
+        if($user.st.count -gt 0){$state = $user.st[0]}
+        if($user.postalcode.count -gt 0){$zipCode = $user.postalcode[0]}
+        if($user.telephonenumber.count -gt 0){$telephone = $user.telephonenumber[0]}
+        if($user.physicaldeliveryofficename.count -gt 0){$office = $user.physicaldeliveryofficename}
 
-        # IT group check
-        $GroupIT = [ADSI]"LDAP://cn=IT Staff,OU=Global Security Groups,OU=Two Castles,DC=tcha1,DC=co,DC=uk"
-        $ITMember = $false
-        $GroupIT.Member | ForEach-Object { 
-                if ($user.distinguishedname -match $_) { 
-                    $ITMember = $true
-                }
-        }
-
-        # Hide Mobile Number group check
-        $GroupNoMobile = [ADSI]"LDAP://cn=OutLook Signature - Hide Mobile,OU=Global Security Groups,OU=Two Castles,DC=tcha1,DC=co,DC=uk"
-        $NoMobile = $false
-        $GroupNoMobile.Member | ForEach-Object { 
-                if ($user.distinguishedname -match $_) { 
-                    $NoMobile = $true
-                }
-        }
-
-        # CJSM Secure Email users
-        $GroupCJSM = [ADSI]"LDAP://cn=CJSM Users,OU=Global Security Groups,OU=Two Castles,DC=tcha1,DC=co,DC=uk"
-        $CJSMMember = $false
-        $GroupCJSM.Member | ForEach-Object { 
-                if ($user.distinguishedname -match $_) { 
-                    $secureEmail = "$username@castlesandcoasts.cjsm.net"
-                    $CJSMMember = $true
-                }
+        # Group Check Example
+        $Group = [ADSI]"LDAP://cn=IT Staff,OU=Groups,DC=Example,DC=co,DC=uk"
+        $Group.Member | ForEach-Object {
+        if ($user.distinguishedname -match $_) {
+                $ItStaff = $true
+            }
         }
 
         # Building address
@@ -84,71 +60,76 @@ $webEmailSignature.Member | ForEach-Object {
         if($state){ $address = $address + "$($state), " }
         if($zipCode){ $address = $address + $zipCode }
 
+  # Building Style Sheet
+  $style = 
+  @"
+  <style>
+  p, table, td, tr, a, span { 
+      font-family: Arial, Helvetica, sans-serif;
+      font-size:  12pt;
+      color: #28b8ce;
+  }
 
-# Build the HTML 
-$signature = 
-@"
-<style>
-p, table, td, tr, a, span { 
-    font-family: Arial, Helvetica, sans-serif;
-    font-size:  12pt;
-    color: #28b8ce;
- }
+  span.blue
+  {
+      color: #28b8ce;
+  }
 
-span.blue
-{
-    color: #28b8ce;
-}
+  table {
+      margin: 0;
+      padding: 0;
+  }
 
-table {
-    margin: 0;
-    padding: 0;
-}
+  a { 
+  text-decoration: none;
+  }
 
-a { 
-text-decoration: none;
-}
+  hr {
+  border: none;
+  height: 1px;
+  background-color: #28b8ce;
+  color: #28b8ce;
+  width: 700px;
+  }
 
-hr {
-border: none;
-height: 1px;
-background-color: #28b8ce;
-color: #28b8ce;
-width: 700px;
-}
+  table.main {
+      border-top: 1px solid #28b8ce;
+  }
+  </style>
+"@
 
-table.main {
-    border-top: 1px solid #28b8ce;
-}
-</style>
+  # Building HTML
+  $signature = 
+  @"
+    $(if($displayName){"<span><b>"+$displayName+"</b></span><br />"})
+    $(if($jobTitle){"<span>"+$jobTitle+"</span><br /><br />"})
 
-
-<span><b>$(if($namePrefix){$namePrefix + " "})$displayName $(if($namePostfix){$namePostfix})</b></span><br>
-$(if($jobTitle){"<span>"+$jobTitle+"</span><br /><br />"})
-
-<p>
+  <p>
     <table class='main'>
         <tr>
             <td style='padding-right: 75px;'>$(if($logo){"<img src='$logo' />"})</td>
             <td>
                 <table>
-                    <tr><td colspan='2' style='padding-bottom: 10px;'>Castles & Coasts Housing Association<br>$($address)</td></tr>
-                    $(if($ITMember){"<tr><td td colspan='2'>IT Helpdesk 01228 635426 or Ext 5426</tr></td>"})
-                    $(if($telephone){"<tr><td>T:</td><td><a href='tel:$telephone'>$($telephone)</a></td></tr>"})
-                    $(if($mobileNumber -And !$NoMobile){"<tr><td>M:</td><td><a href='tel:$mobileNumber'>$($mobileNumber)</a></td></tr>"})
-                    $(if($email){"<tr><td>E:</td><td><a href='mailto:$email'>$($email)</a></td></tr>"})
-                    $(if($CJSMMember){"<tr><td colspan='2'>Secure Email: <a href='mailto:$secureEmail'>$($secureEmail)</a></td></tr>"})
-                    $(if($website){"<tr><td colspan='2'><b>Website: <a href='http://$website'>$($website)</a></b></td></tr>"})
+                    <tr><td colspan='2' style='padding-bottom: 10px;'>
+                      $(if($companyName){ "<b>"+$companyName+"</b><br />" })
+                      $(if($street){ $street+", " })
+                      $(if($city){ $city+", " })
+                      $(if($state){ $state+", " })
+                      $(if($zipCode){ $zipCode })
+                    </td></tr>
+                    $(if($ITMember){"<tr><td td colspan='2'>IT Helpdesk: 0188887 55555 6666</tr></td>"})
+                    $(if($telephone){"<tr><td>T: </td><td><a href='tel:$telephone'>$($telephone)</a></td></tr>"})
+                    $(if($mobileNumber){"<tr><td>M: </td><td><a href='tel:$mobileNumber'>$($mobileNumber)</a></td></tr>"})
+                    $(if($email){"<tr><td>E: </td><td><a href='mailto:$email'>$($email)</a></td></tr>"})
+                    $(if($website){"<tr><td>W: <a href='https://$website'>$($website)</a></td></tr>"})
                 </table>
             </td>
         </tr>
     </table>
-    <!-- Temp banner below signature -->
-    <img src="https://castlesandcoasts.co.uk/media/11076/ukha_2020_finalist_small.png" height=150px/>
-</p>
-<br />
+  </p>
+  <br />
 "@
 }
 
-        Get-Mailbox $user.mail[0] | Set-MailboxMessageConfiguration -SignatureHTML $signature -AutoAddSignature:$true
+    Get-Mailbox $user.mail[0] | Set-MailboxMessageConfiguration -SignatureHTML $signature -AutoAddSignature:$true
 }
