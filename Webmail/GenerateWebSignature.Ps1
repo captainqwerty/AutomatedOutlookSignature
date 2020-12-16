@@ -17,8 +17,8 @@
 #>
 
 #requires -Module ExchangeOnlineManagment
-Import-Module ExchangeOnlineManagement
 
+Import-Module ExchangeOnlineManagement
 Connect-ExchangeOnline -UserPrincipalName example@example.com
 
 $webEmailSignature = [ADSI]"LDAP://CN=Outlook - Web Signature,OU=Groups,DC=Example,DC=co,DC=uk"
@@ -138,3 +138,5 @@ $webEmailSignature.Member | ForEach-Object {
 
   Get-Mailbox $user.mail[0] | Set-MailboxMessageConfiguration -SignatureHTML $signature -AutoAddSignature:$true
 }
+
+Disconnect-ExchangeOnline
