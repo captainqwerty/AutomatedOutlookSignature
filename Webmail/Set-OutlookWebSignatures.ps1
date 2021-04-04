@@ -6,8 +6,6 @@
   Outlook Web Signature Script - https://github.com/captainqwerty/AutomatedOutlookSignature
 .DESCRIPTION
   This script gets each users AD details one at a time, builds their HTML signature and sets it as their Outlook web signature.
-.INPUTS
-  
 .OUTPUTS
   All signatures are stored in the $signatureFolder
 .NOTES
