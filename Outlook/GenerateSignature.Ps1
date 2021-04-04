@@ -21,6 +21,7 @@
 # Getting Active Directory information for current user
 $user = (([adsisearcher]"(&(objectCategory=User)(samaccountname=$env:username))").FindOne().Properties)
 
+# If the user is not found in Active Directory exit the script
 if(!$user) {
   exit
 }
@@ -30,6 +31,7 @@ $folderlocation = $Env:appdata + '\\Microsoft\\signatures'
 $filename = "Signature"
 $file  = "$folderLocation\\$filename"
 
+# If the folder does not exist create it
 if(!(Test-Path -Path $folderlocation )){
     New-Item -ItemType directory -Path $folderlocation
 }
@@ -39,21 +41,23 @@ $companyName = "Company Name"
 $logo = "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" # Please note that if you do include a logo it must be located somewhere on the internet that the public has access to, many users upload it to their website.
 
 # Get the users properties (These should always be in Active Directory and Unique)
-if($user.name.count -gt 0){$displayName = $user.name[0]}
-if($user.title.count -gt 0){$jobTitle = $user.title[0]}
-if($user.homephone.count -gt 0){$directDial = $user.homephone[0]}
-if($user.mobile.count -gt 0){$mobileNumber = $user.mobile[0]}
-if($user.mail.count -gt 0){$email = $user.mail[0]}
-if($user.wwwhomepage.count -gt 0){$website = $user.wwwhomepage[0]}
+if($user.name.count -gt 0){$displayName = $user.name[0]} # Display Name
+if($user.title.count -gt 0){$jobTitle = $user.title[0]} # Job Title
+if($user.mail.count -gt 0){$email = $user.mail[0]} # Email Address
+
+if($user.mobile.count -gt 0){$mobileNumber = $user.mobile[0]} # Mobile number
+if($user.homephone.count -gt 0){$directDial = $user.homephone[0]} # Home Nnumber
+if($user.telephonenumber.count -gt 0){$telephone = $user.telephonenumber[0]} # Office number
+
+if($user.wwwhomepage.count -gt 0){$website = $user.wwwhomepage[0]} # Webpage address
 
 # Address
-if($user.postofficebox.count -gt 0){$poBox = $user.postofficebox[0]}
-if($user.streetaddress.count -gt 0){$street = $user.streetaddress[0]}
-if($user.l.count -gt 0){$city = $user.l[0]}
-if($user.st.count -gt 0){$state = $user.st[0]}
-if($user.postalcode.count -gt 0){$zipCode = $user.postalcode[0]}
-if($user.telephonenumber.count -gt 0){$telephone = $user.telephonenumber[0]}
-if($user.physicaldeliveryofficename.count -gt 0){$office = $user.physicaldeliveryofficename}
+if($user.postofficebox.count -gt 0){$poBox = $user.postofficebox[0]} # PO box number
+if($user.physicaldeliveryofficename.count -gt 0){$office = $user.physicaldeliveryofficename} # Office Name
+if($user.streetaddress.count -gt 0){$street = $user.streetaddress[0]} # Street address
+if($user.l.count -gt 0){$city = $user.l[0]} # City
+if($user.st.count -gt 0){$state = $user.st[0]} # State
+if($user.postalcode.count -gt 0){$zipCode = $user.postalcode[0]} # Post code / Zip code
 
 # Group Check Example
 $Group = [ADSI]"LDAP://cn=IT Staff,OU=Groups,DC=Example,DC=co,DC=uk"
