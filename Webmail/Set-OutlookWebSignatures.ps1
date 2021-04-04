@@ -20,21 +20,19 @@
 
 # Sets the folder to store all web signatures and if the folder does exists it will be created.
 $signatureFolder = "$psscriptroot\Web-Signatures"
-
 if(!(test-path $signatureFolder)) {
     New-Item -ItemType "directory" -Path $signatureFolder
 }
 
 #-----[ Functions ]-----#
 
-# This is the function that creates their signature file if it does not exists, or updates it if it differs.
+# This is the function that creates their signature file if it does not exists, or updates it if it differs
 function Create-WebSignatures {
-
-    # Gets each of the users one at a time from AD and creates their signature
+    # Array storing a list of all users who require a signature update
     $signaturesToUpdate = @()
 
     # Gets all users in the Outlook Signature Group
-    $allStaff = Get-ADGroupMember "Outlook Signature"
+    $allStaff = Get-ADGroupMember "Outlook Web Signature"
 
     # For each user in the All Staff group the below will be ran
     $allStaff | ForEach-Object {
