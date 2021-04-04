@@ -55,6 +55,7 @@ function Create-WebSignatures {
         $namePostfix = $user.extensionattribute2 # Bs(Hons) etc.
 
         # These are details you can either get from Active directory or as they might be the same for your entire company could statically set them here. Each has a commented out static example, simply swap the commented lines and alter the example.
+        $companyName = $user.company # Company name
         $street = $user.streetaddress # Street address
         $city = $user.l # City
         $state = $user.st # State
