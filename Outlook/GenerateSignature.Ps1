@@ -21,156 +21,158 @@
 # Getting Active Directory information for current user
 $user = (([adsisearcher]"(&(objectCategory=User)(samaccountname=$env:username))").FindOne().Properties)
 
-if($user) {
-  # Create the signatures folder and sets the name of the signature file
-  $folderlocation = $Env:appdata + '\\Microsoft\\signatures'
-  $filename = "Signature"
-  $file  = "$folderLocation\\$filename"
+if(!$user) {
+  exit
+}
 
-  if(!(Test-Path -Path $folderlocation )){
-      New-Item -ItemType directory -Path $folderlocation
-  }
+# Create the signatures folder and sets the name of the signature file
+$folderlocation = $Env:appdata + '\\Microsoft\\signatures'
+$filename = "Signature"
+$file  = "$folderLocation\\$filename"
 
-  # Company name and logo
-  $companyName = "Company Name"
-  $logo = "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" # Please note that if you do include a logo it must be located somewhere on the internet that the public has access to, many users upload it to their website.
+if(!(Test-Path -Path $folderlocation )){
+    New-Item -ItemType directory -Path $folderlocation
+}
 
-  # Get the users properties (These should always be in Active Directory and Unique)
-  if($user.name.count -gt 0){$displayName = $user.name[0]}
-  if($user.title.count -gt 0){$jobTitle = $user.title[0]}
-  if($user.homephone.count -gt 0){$directDial = $user.homephone[0]}
-  if($user.mobile.count -gt 0){$mobileNumber = $user.mobile[0]}
-  if($user.mail.count -gt 0){$email = $user.mail[0]}
-  if($user.wwwhomepage.count -gt 0){$website = $user.wwwhomepage[0]}
+# Company name and logo
+$companyName = "Company Name"
+$logo = "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" # Please note that if you do include a logo it must be located somewhere on the internet that the public has access to, many users upload it to their website.
 
-  # Address
-  if($user.postofficebox.count -gt 0){$poBox = $user.postofficebox[0]}
-  if($user.streetaddress.count -gt 0){$street = $user.streetaddress[0]}
-  if($user.l.count -gt 0){$city = $user.l[0]}
-  if($user.st.count -gt 0){$state = $user.st[0]}
-  if($user.postalcode.count -gt 0){$zipCode = $user.postalcode[0]}
-  if($user.telephonenumber.count -gt 0){$telephone = $user.telephonenumber[0]}
-  if($user.physicaldeliveryofficename.count -gt 0){$office = $user.physicaldeliveryofficename}
+# Get the users properties (These should always be in Active Directory and Unique)
+if($user.name.count -gt 0){$displayName = $user.name[0]}
+if($user.title.count -gt 0){$jobTitle = $user.title[0]}
+if($user.homephone.count -gt 0){$directDial = $user.homephone[0]}
+if($user.mobile.count -gt 0){$mobileNumber = $user.mobile[0]}
+if($user.mail.count -gt 0){$email = $user.mail[0]}
+if($user.wwwhomepage.count -gt 0){$website = $user.wwwhomepage[0]}
 
-  # Group Check Example
-  $Group = [ADSI]"LDAP://cn=IT Staff,OU=Groups,DC=Example,DC=co,DC=uk"
-  $Group.Member | ForEach-Object {
-  if ($user.distinguishedname -match $_) {
-        $ItStaff = $true
-      }
-  }
+# Address
+if($user.postofficebox.count -gt 0){$poBox = $user.postofficebox[0]}
+if($user.streetaddress.count -gt 0){$street = $user.streetaddress[0]}
+if($user.l.count -gt 0){$city = $user.l[0]}
+if($user.st.count -gt 0){$state = $user.st[0]}
+if($user.postalcode.count -gt 0){$zipCode = $user.postalcode[0]}
+if($user.telephonenumber.count -gt 0){$telephone = $user.telephonenumber[0]}
+if($user.physicaldeliveryofficename.count -gt 0){$office = $user.physicaldeliveryofficename}
 
-  # Building Style Sheet
-  $style = 
-  @"
-  <style>
-  p, table, td, tr, a, span { 
-      font-family: Arial, Helvetica, sans-serif;
-      font-size:  12pt;
-      color: #28b8ce;
-  }
+# Group Check Example
+$Group = [ADSI]"LDAP://cn=IT Staff,OU=Groups,DC=Example,DC=co,DC=uk"
+$Group.Member | ForEach-Object {
+if ($user.distinguishedname -match $_) {
+      $ItStaff = $true
+    }
+}
 
-  span.blue
-  {
-      color: #28b8ce;
-  }
+# Building Style Sheet
+$style = 
+@"
+<style>
+p, table, td, tr, a, span { 
+    font-family: Arial, Helvetica, sans-serif;
+    font-size:  12pt;
+    color: #28b8ce;
+}
 
-  table {
-      margin: 0;
-      padding: 0;
-  }
+span.blue
+{
+    color: #28b8ce;
+}
 
-  a { 
-  text-decoration: none;
-  }
+table {
+    margin: 0;
+    padding: 0;
+}
 
-  hr {
-  border: none;
-  height: 1px;
-  background-color: #28b8ce;
-  color: #28b8ce;
-  width: 700px;
-  }
+a { 
+text-decoration: none;
+}
 
-  table.main {
-      border-top: 1px solid #28b8ce;
-  }
-  </style>
+hr {
+border: none;
+height: 1px;
+background-color: #28b8ce;
+color: #28b8ce;
+width: 700px;
+}
+
+table.main {
+    border-top: 1px solid #28b8ce;
+}
+</style>
 "@
 
-  # Building HTML
-  $signature = 
-  @"
-    $(if($displayName){"<span><b>"+$displayName+"</b></span><br />"})
-    $(if($jobTitle){"<span>"+$jobTitle+"</span><br /><br />"})
+# Building HTML
+$signature = 
+@"
+  $(if($displayName){"<span><b>"+$displayName+"</b></span><br />"})
+  $(if($jobTitle){"<span>"+$jobTitle+"</span><br /><br />"})
 
-  <p>
-    <table class='main'>
-        <tr>
-            <td style='padding-right: 75px;'>$(if($logo){"<img src='$logo' />"})</td>
-            <td>
-                <table>
-                    <tr><td colspan='2' style='padding-bottom: 10px;'>
-                      $(if($companyName){ "<b>"+$companyName+"</b><br />" })
-                      $(if($street){ $street+", " })
-                      $(if($city){ $city+", " })
-                      $(if($state){ $state+", " })
-                      $(if($zipCode){ $zipCode })
-                    </td></tr>
-                    $(if($ITMember){"<tr><td td colspan='2'>IT Helpdesk: 0188887 55555 6666</tr></td>"})
-                    $(if($telephone){"<tr><td>T: </td><td><a href='tel:$telephone'>$($telephone)</a></td></tr>"})
-                    $(if($mobileNumber){"<tr><td>M: </td><td><a href='tel:$mobileNumber'>$($mobileNumber)</a></td></tr>"})
-                    $(if($email){"<tr><td>E: </td><td><a href='mailto:$email'>$($email)</a></td></tr>"})
-                    $(if($website){"<tr><td>W: <a href='https://$website'>$($website)</a></td></tr>"})
-                </table>
-            </td>
-        </tr>
-    </table>
-  </p>
-  <br />
+<p>
+  <table class='main'>
+      <tr>
+          <td style='padding-right: 75px;'>$(if($logo){"<img src='$logo' />"})</td>
+          <td>
+              <table>
+                  <tr><td colspan='2' style='padding-bottom: 10px;'>
+                    $(if($companyName){ "<b>"+$companyName+"</b><br />" })
+                    $(if($street){ $street+", " })
+                    $(if($city){ $city+", " })
+                    $(if($state){ $state+", " })
+                    $(if($zipCode){ $zipCode })
+                  </td></tr>
+                  $(if($ITMember){"<tr><td td colspan='2'>IT Helpdesk: 0188887 55555 6666</tr></td>"})
+                  $(if($telephone){"<tr><td>T: </td><td><a href='tel:$telephone'>$($telephone)</a></td></tr>"})
+                  $(if($mobileNumber){"<tr><td>M: </td><td><a href='tel:$mobileNumber'>$($mobileNumber)</a></td></tr>"})
+                  $(if($email){"<tr><td>E: </td><td><a href='mailto:$email'>$($email)</a></td></tr>"})
+                  $(if($website){"<tr><td>W: <a href='https://$website'>$($website)</a></td></tr>"})
+              </table>
+          </td>
+      </tr>
+  </table>
+</p>
+<br />
 "@
 
-  # Save the HTML to the signature file
-  $style + $signature | out-file "$file.htm" -encoding ascii
+# Save the HTML to the signature file
+$style + $signature | out-file "$file.htm" -encoding ascii
 
-  # Build the txt version for none rich text emails
-  $signature = 
-  @"
-  $(if($displayName){ $displayName })
-  $(if($jobTitle){ $jobTitle })
-  ___________________________________________________________
+# Build the txt version for none rich text emails
+$signature = 
+@"
+$(if($displayName){ $displayName })
+$(if($jobTitle){ $jobTitle })
+___________________________________________________________
 
-  $(if($companyName){ $companyName })
-  $(if($street){ $street+", " })
-  $(if($city){ $city+", " })
-  $(if($state){ $state+", " })
-  $(if($zipCode){ $zipCode })
+$(if($companyName){ $companyName })
+$(if($street){ $street+", " })
+$(if($city){ $city+", " })
+$(if($state){ $state+", " })
+$(if($zipCode){ $zipCode })
 
-  $(if($ITMember){"For IT Helpdesk Call 0191231 212313"})
-  $(if($telephone){"T: "+$telephone})
-  $(if($mobileNumber){"M: "+$mobileNumber})
-  $(if($email){"E: "+$email})
-  $(if($website){"W: "+$website})
+$(if($ITMember){"For IT Helpdesk Call 0191231 212313"})
+$(if($telephone){"T: "+$telephone})
+$(if($mobileNumber){"M: "+$mobileNumber})
+$(if($email){"E: "+$email})
+$(if($website){"W: "+$website})
 "@
 
-  # Output the text to the signatures folder
-  $signature | out-file "$file.txt" -encoding ascii
+# Output the text to the signatures folder
+$signature | out-file "$file.txt" -encoding ascii
 
-  # Setting the regkeys for Outlook 2016
-  if (test-path "HKCU:\\Software\\Microsoft\\Office\\16.0\\Common\\General") 
-  {
-      get-item -path HKCU:\\Software\\Microsoft\\Office\\16.0\\Common\\General | new-Itemproperty -name Signatures -value signatures -propertytype string -force
-      get-item -path HKCU:\\Software\\Microsoft\\Office\\16.0\\Common\\MailSettings | new-Itemproperty -name NewSignature -value $filename -propertytype string -force
-      get-item -path HKCU:\\Software\\Microsoft\\Office\\16.0\\Common\\MailSettings | new-Itemproperty -name ReplySignature -value $filename -propertytype string -force
-      Remove-ItemProperty -Path HKCU:\\Software\\Microsoft\\Office\\16.0\\Outlook\\Setup -Name "First-Run" -ErrorAction silentlycontinue
-  }
+# Setting the regkeys for Outlook 2016
+if (test-path "HKCU:\\Software\\Microsoft\\Office\\16.0\\Common\\General") 
+{
+    get-item -path HKCU:\\Software\\Microsoft\\Office\\16.0\\Common\\General | new-Itemproperty -name Signatures -value signatures -propertytype string -force
+    get-item -path HKCU:\\Software\\Microsoft\\Office\\16.0\\Common\\MailSettings | new-Itemproperty -name NewSignature -value $filename -propertytype string -force
+    get-item -path HKCU:\\Software\\Microsoft\\Office\\16.0\\Common\\MailSettings | new-Itemproperty -name ReplySignature -value $filename -propertytype string -force
+    Remove-ItemProperty -Path HKCU:\\Software\\Microsoft\\Office\\16.0\\Outlook\\Setup -Name "First-Run" -ErrorAction silentlycontinue
+}
 
-  # Setting the regkeys for Outlook 2010 - Thank you AJWhite1970 for the 2010 registry keys
-  if (test-path "HKCU:\\Software\\Microsoft\\Office\\14.0\\Common\\General") 
-  {
-      get-item -path HKCU:\\Software\\Microsoft\\Office\\14.0\\Common\\ General | new-Itemproperty -name Signatures -value signatures -propertytype string -force
-      get-item -path HKCU:\\Software\\Microsoft\\Office\\14.0\\Common\\ MailSettings | new-Itemproperty -name NewSignature -value $filename -propertytype string -force
-      get-item -path HKCU:\\Software\\Microsoft\\Office\\14.0\\Common\\ MailSettings | new-Itemproperty -name ReplySignature -value $filename -propertytype string -force
-      Remove-ItemProperty -Path HKCU:\\Software\\Microsoft\\Office\\14.0\\Outlook\\Setup -Name "First-Run" -ErrorAction silentlycontinue
-  }
+# Setting the regkeys for Outlook 2010 - Thank you AJWhite1970 for the 2010 registry keys
+if (test-path "HKCU:\\Software\\Microsoft\\Office\\14.0\\Common\\General") 
+{
+    get-item -path HKCU:\\Software\\Microsoft\\Office\\14.0\\Common\\ General | new-Itemproperty -name Signatures -value signatures -propertytype string -force
+    get-item -path HKCU:\\Software\\Microsoft\\Office\\14.0\\Common\\ MailSettings | new-Itemproperty -name NewSignature -value $filename -propertytype string -force
+    get-item -path HKCU:\\Software\\Microsoft\\Office\\14.0\\Common\\ MailSettings | new-Itemproperty -name ReplySignature -value $filename -propertytype string -force
+    Remove-ItemProperty -Path HKCU:\\Software\\Microsoft\\Office\\14.0\\Outlook\\Setup -Name "First-Run" -ErrorAction silentlycontinue
 }
