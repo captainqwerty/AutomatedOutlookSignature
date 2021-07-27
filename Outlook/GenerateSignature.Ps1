@@ -121,7 +121,7 @@ if($user) {
                     $(if($telephone){"<tr><td>T: </td><td><a href='tel:$telephone'>$($telephone)</a></td></tr>"})
                     $(if($mobileNumber){"<tr><td>M: </td><td><a href='tel:$mobileNumber'>$($mobileNumber)</a></td></tr>"})
                     $(if($email){"<tr><td>E: </td><td><a href='mailto:$email'>$($email)</a></td></tr>"})
-                    $(if($website){"<tr><td>W: <a href='https://$website'>$($website)</a></td></tr>"})
+                    $(if($website){"<tr><td>W:</td><td><a href='https://$website'>$($website)</a></td></tr>"})
                 </table>
             </td>
         </tr>
