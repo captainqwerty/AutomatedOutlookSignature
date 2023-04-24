@@ -22,23 +22,23 @@
 $user = (([adsisearcher]"(&(objectCategory=User)(samaccountname=$env:username))").FindOne().Properties)
 
 # If the user is not found in Active Directory exit the script
-if(!$user) {
+if (-not $user) {
   exit
 }
 
 # Create the signatures folder and sets the name of the signature file
-$folderlocation = $Env:appdata + '\\Microsoft\\signatures'
-$filename = "Signature"
-$file  = "$folderLocation\\$filename"
+$folderLocation = Join-Path -Path $Env:appdata -ChildPath 'Microsoft\signatures'
+$filename = 'Signature'
+$file  = Join-Path -Path $folderLocation -ChildPath $filename
 
 # If the folder does not exist create it
-if(!(Test-Path -Path $folderlocation )){
-    New-Item -ItemType directory -Path $folderlocation
+if (-not (Test-Path -Path $folderLocation)) {
+  New-Item -ItemType directory -Path $folderLocation
 }
 
 # Company name and logo
-$companyName = "Company Name"
-$logo = "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" # Please note that if you do include a logo it must be located somewhere on the internet that the public has access to, many users upload it to their website.
+$companyName = 'Company Name'
+$logo = 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' # Please note that if you do include a logo it must be located somewhere on the internet that the public has access to, many users upload it to their website.
 
 # Get the users properties (These should always be in Active Directory and Unique)
 if($user.name.count -gt 0){$displayName = $user.name[0]} # Display Name
