@@ -13,9 +13,9 @@
   $folderlocation\$filename.htm - HTML signature for rich text emails
   $folderlocation\$filename.txt - Text signautre for none rich text emails
 .NOTES
-  Version:        3.0
+  Version:        4.0
   Author:         CaptainQwerty
-  Modified:       29/02/2020
+  Modified:       24/04/2023
 #>
 
 try {
@@ -50,7 +50,7 @@ if($user.title.count -gt 0){$jobTitle = $user.title[0]} # Job Title
 if($user.mail.count -gt 0){$email = $user.mail[0]} # Email Address
 
 if($user.mobile.count -gt 0){$mobileNumber = $user.mobile[0]} # Mobile number
-if($user.homephone.count -gt 0){$directDial = $user.homephone[0]} # Home Nnumber
+if($user.homephone.count -gt 0){$directDial = $user.homephone[0]} # Home number
 if($user.telephonenumber.count -gt 0){$telephone = $user.telephonenumber[0]} # Office number
 
 if($user.wwwhomepage.count -gt 0){$website = $user.wwwhomepage[0]} # Webpage address
