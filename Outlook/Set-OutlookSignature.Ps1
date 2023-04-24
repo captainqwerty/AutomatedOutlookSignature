@@ -41,8 +41,7 @@ if (-not (Test-Path -Path $folderLocation)) {
   }
 }
 
-# Company name and logo
-$companyName = 'Company Name'
+# Logo to be used
 $logo = 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' # Please note that if you do include a logo it must be located somewhere on the internet that the public has access to, many users upload it to their website.
 
 # Get the users properties (These should always be in Active Directory and Unique)
@@ -54,6 +53,8 @@ if($user.mobile.count -gt 0){$mobileNumber = $user.mobile[0]} # Mobile number
 if($user.homephone.count -gt 0){$directDial = $user.homephone[0]} # Home number
 if($user.telephonenumber.count -gt 0){$telephone = $user.telephonenumber[0]} # Office number
 
+# Company name and website
+if($user.company.count -gt 0){$comapnyName = $user.companyName[0]} # Company name
 if($user.wwwhomepage.count -gt 0){$website = $user.wwwhomepage[0]} # Webpage address
 
 # Address
