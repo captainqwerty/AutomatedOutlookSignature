@@ -41,7 +41,7 @@ if (-not (Test-Path -Path $folderLocation)) {
   }
 }
 
-# Logo to be used
+# Logo to be used - if different users need different logos you could consider using their extenstionAttributes or another property in Active Directory to store the URL for their logo.
 $logo = 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' # Please note that if you do include a logo it must be located somewhere on the internet that the public has access to, many users upload it to their website.
 
 # Get the users properties (These should always be in Active Directory and Unique)
@@ -64,6 +64,13 @@ if($user.streetaddress.count -gt 0){$street = $user.streetaddress[0]} # Street a
 if($user.l.count -gt 0){$city = $user.l[0]} # City
 if($user.st.count -gt 0){$state = $user.st[0]} # State
 if($user.postalcode.count -gt 0){$zipCode = $user.postalcode[0]} # Post code / Zip code
+
+# Extended attributes
+if($user.extensionAttribute1.count -gt 0){$attribute1 = $user.extensionAttribute1[0]} # Custom attribute 1
+if($user.extensionAttribute2.count -gt 0){$attribute2 = $user.extensionAttribute2[0]} # Custom attribute 2
+if($user.extensionAttribute3.count -gt 0){$attribute3 = $user.extensionAttribute3[0]} # Custom attribute 3
+if($user.extensionAttribute4.count -gt 0){$attribute4 = $user.extensionAttribute4[0]} # Custom attribute 4
+if($user.extensionAttribute5.count -gt 0){$attribute5 = $user.extensionAttribute5[0]} # Custom attribute 5
 
 # Group Check Example
 $Group = [ADSI]"LDAP://cn=IT Staff,OU=Groups,DC=Example,DC=co,DC=uk"
