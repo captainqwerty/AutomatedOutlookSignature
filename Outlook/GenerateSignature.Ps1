@@ -18,11 +18,10 @@
   Modified:       29/02/2020
 #>
 
-# Getting Active Directory information for current user
-$user = (([adsisearcher]"(&(objectCategory=User)(samaccountname=$env:username))").FindOne().Properties)
-
-# If the user is not found in Active Directory exit the script
-if (-not $user) {
+try {
+  $user = (([adsisearcher]"(&(objectCategory=User)(samaccountname=$env:username))").FindOne().Properties)
+} catch {
+  Write-Host "Error: Unable to query Active Directory for user information. Details: $($_.Exception.Message)"
   exit
 }
 
@@ -33,7 +32,12 @@ $file  = Join-Path -Path $folderLocation -ChildPath $filename
 
 # If the folder does not exist create it
 if (-not (Test-Path -Path $folderLocation)) {
-  New-Item -ItemType directory -Path $folderLocation
+  try {
+      New-Item -ItemType directory -Path $folderLocation
+  } catch {
+      Write-Host "Error: Unable to create the signatures folder. Details: $($_.Exception.Message)"
+      exit
+  }
 }
 
 # Company name and logo
@@ -138,7 +142,13 @@ $signature =
 "@
 
 # Save the HTML to the signature file
-$style + $signature | Out-File -FilePath "$file.htm" -Encoding ascii
+try {
+  $style + $signature | Out-File -FilePath "$file.htm" -Encoding ascii
+} catch {
+  Write-Host "Error: Unable to save the HTML signature file. Details: $($_.Exception.Message)"
+  exit
+}
+
 
 # Build the txt version for none rich text emails
 $signature = 
@@ -161,7 +171,12 @@ $(if($website){"W: "+$website})
 "@
 
 # Output the text to the signatures folder
-$signature | out-file "$file.txt" -encoding ascii
+try {
+  $signature | out-file "$file.txt" -encoding ascii
+} catch {
+  Write-Host "Error: Unable to save the text signature file. Details: $($_.Exception.Message)"
+  exit
+}
 
 # Setting the regkeys for Outlook 2016
 if (test-path "HKCU:\\Software\\Microsoft\\Office\\16.0\\Common\\General") 
