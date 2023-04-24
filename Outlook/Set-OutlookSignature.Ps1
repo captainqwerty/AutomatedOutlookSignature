@@ -18,6 +18,7 @@
   Modified:       24/04/2023
 #>
 
+# Attempt to get the user from Active Directory, if no user is found or there is an issue the script will exit
 try {
   $user = (([adsisearcher]"(&(objectCategory=User)(samaccountname=$env:username))").FindOne().Properties)
 } catch {
