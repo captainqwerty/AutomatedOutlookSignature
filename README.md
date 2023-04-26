@@ -43,10 +43,11 @@ The following properties are used from Active Directory within the script:
 | $zipCode | Zip/Postal Code | Post Code / Zip Code |
 | $office | physicaldeliveryofficename | Office |
 | $website | Website | Website address |
+| $companyName | company | The name of the company |
 
 Additional variables that do not rely on Active Directory and are currently set statically
 
 | Variable in Script | Usage |
 |-------------| ------------- |
-| $companyName | Variable containing the name of the company |
+
 | $logo | Variable containing the URL of a image to use as a logo in the signature |
