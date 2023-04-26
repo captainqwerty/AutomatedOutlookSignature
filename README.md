@@ -5,6 +5,11 @@ This project contains two scripts:
 
 Outlook desktop signature script currently tested and working with Outlook 2010, 2016, 2019, 2021.
 
+## Changes
+> Breaking change of the scipt being renamed to Set-OutlookSignature.ps1
+> Added some better practice
+> Added more error handling
+
 ## The Scripts
 This is a very basic description on how to use the scripts and how they work. For more detail please see the YouTube videos linked earlier 
 
