@@ -54,5 +54,4 @@ Additional variables that do not rely on Active Directory and are currently set 
 
 | Variable in Script | Usage |
 |-------------| ------------- |
-
 | $logo | Variable containing the URL of a image to use as a logo in the signature |
