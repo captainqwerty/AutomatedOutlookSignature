@@ -1,3 +1,9 @@
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![MIT License][license-shield]][license-url]
+
 # Automated Outlook Signature Scripts
 This project contains two scripts: 
 * Set-OutlookSignature.ps1 - Used to generate and set a user's signature for desktop Outlook.
@@ -55,3 +61,15 @@ Additional variables that do not rely on Active Directory and are currently set 
 | Variable in Script | Usage |
 |-------------| ------------- |
 | $logo | Variable containing the URL of a image to use as a logo in the signature |
+
+
+[contributors-shield]: https://img.shields.io/github/contributors/CaptainQwerty/AutomatedOutlookSignature.svg?style=for-the-badge
+[contributors-url]: https://github.com/CaptainQwerty/AutomatedOutlookSignature/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/CaptainQwerty/AutomatedOutlookSignature.svg?style=for-the-badge
+[forks-url]: https://github.com/CaptainQwerty/AutomatedOutlookSignature/network/members
+[stars-shield]: https://img.shields.io/github/stars/CaptainQwerty/AutomatedOutlookSignature.svg?style=for-the-badge
+[stars-url]: https://github.com/CaptainQwerty/AutomatedOutlookSignature/stargazers
+[issues-shield]: https://img.shields.io/github/issues/CaptainQwerty/AutomatedOutlookSignature.svg?style=for-the-badge
+[issues-url]: https://github.com/CaptainQwerty/AutomatedOutlookSignature/issues
+[license-shield]: https://img.shields.io/github/license/CaptainQwerty/AutomatedOutlookSignature.svg?style=for-the-badge
+[license-url]: https://github.com/CaptainQwerty/AutomatedOutlookSignature/blob/master/LICENSE.txt
