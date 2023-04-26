@@ -13,6 +13,7 @@ Outlook desktop signature script currently tested and working with Outlook 2010,
 
 ## Changes
 * Breaking change of the scipt being renamed to Set-OutlookSignature.ps1
+* Breaking change - Company now takes the value from Active Directory
 * Added some better practice
 * Added more error handling
 
