@@ -1,9 +1,21 @@
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![MIT License][license-shield]][license-url]
+
 # Automated Outlook Signature Scripts
 This project contains two scripts: 
 * Set-OutlookSignature.ps1 - Used to generate and set a user's signature for desktop Outlook.
 * Set-OutlookWebSignatures.ps1 - This script is Currently a work in progress.
 
 Outlook desktop signature script currently tested and working with Outlook 2010, 2016, 2019, 2021.
+
+## Changes
+* Breaking change of the scipt being renamed to Set-OutlookSignature.ps1
+* Breaking change - Company now takes the value from Active Directory
+* Added some better practice
+* Added more error handling
 
 ## The Scripts
 This is a very basic description on how to use the scripts and how they work. For more detail please see the YouTube videos linked earlier 
@@ -43,10 +55,22 @@ The following properties are used from Active Directory within the script:
 | $zipCode | Zip/Postal Code | Post Code / Zip Code |
 | $office | physicaldeliveryofficename | Office |
 | $website | Website | Website address |
+| $companyName | company | The name of the company |
 
 Additional variables that do not rely on Active Directory and are currently set statically
 
 | Variable in Script | Usage |
 |-------------| ------------- |
-| $companyName | Variable containing the name of the company |
 | $logo | Variable containing the URL of a image to use as a logo in the signature |
+
+
+[contributors-shield]: https://img.shields.io/github/contributors/CaptainQwerty/AutomatedOutlookSignature.svg?style=for-the-badge
+[contributors-url]: https://github.com/CaptainQwerty/AutomatedOutlookSignature/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/CaptainQwerty/AutomatedOutlookSignature.svg?style=for-the-badge
+[forks-url]: https://github.com/CaptainQwerty/AutomatedOutlookSignature/network/members
+[stars-shield]: https://img.shields.io/github/stars/CaptainQwerty/AutomatedOutlookSignature.svg?style=for-the-badge
+[stars-url]: https://github.com/CaptainQwerty/AutomatedOutlookSignature/stargazers
+[issues-shield]: https://img.shields.io/github/issues/CaptainQwerty/AutomatedOutlookSignature.svg?style=for-the-badge
+[issues-url]: https://github.com/CaptainQwerty/AutomatedOutlookSignature/issues
+[license-shield]: https://img.shields.io/github/license/CaptainQwerty/AutomatedOutlookSignature.svg?style=for-the-badge
+[license-url]: https://github.com/CaptainQwerty/AutomatedOutlookSignature/blob/master/LICENSE.txt

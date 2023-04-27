@@ -54,7 +54,7 @@ if($user.homephone.count -gt 0){$directDial = $user.homephone[0]} # Home number
 if($user.telephonenumber.count -gt 0){$telephone = $user.telephonenumber[0]} # Office number
 
 # Company name and website
-if($user.company.count -gt 0){$comapnyName = $user.companyName[0]} # Company name
+if($user.company.count -gt 0){$companyName = $user.company[0]} # Company name
 if($user.wwwhomepage.count -gt 0){$website = $user.wwwhomepage[0]} # Webpage address
 
 # Address
