@@ -7,6 +7,8 @@
 # Automated Outlook Signature Script
 The script retrieves user details from Active Directory, generates a new signature file, and sets it as the default Outlook signature. It ensures that any changes in user details, such as job title, are reflected in the signature during the next logon.
 
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/CaptainQwerty)
+
 ## Table of Contents
 - [Features](#features)
 - [Usage](#usage)
