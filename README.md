@@ -11,7 +11,8 @@ The script retrieves user details from Active Directory, generates a new signatu
 - [Features](#features)
 - [Usage](#usage)
 - [Parameters](#parameters)
-- [Installation](#installation)
+- [Installation with Group Policy](#installation-with-group-policy)
+- [Known Issues and Caveats](#known-issues-and-caveats)
 - [Contributing](#contributing)
 - [License](#license)
 - [Acknowledgements](#acknowledgements)
@@ -107,11 +108,16 @@ These details can be customised and included in the signature template to ensure
 .\AutomatedOutlookSignature.ps1 -CompanyName "YourCompany" -Website "www.yourcompany.com"
 ```
 
-## Installation - Group Policy
+## Installation with Group Policy
 1. Download the latest version of the script from the [GitHub repository](https://github.com/CaptainQwerty/AutomatedOutlookSignature).
-2. Edit the script and update the value of `$logo` to your publically available logo image.
+2. Edit the script and update the value of `$logo` to your publicly available logo image.
 3. Place the script in a location accessible to your users, such as a network share or GPO script folder.
 4. Configure Group Policy to run the script at logon. Refer to the provided [Configuring Logon PowerShell Scripts with Group Policy - 4Sysops](https://4sysops.com/archives/configuring-logon-powershell-scripts-with-group-policy/) article for guidance. You can also watch this [YouTube Video Guide](https://www.youtube.com/watch?v=rt9y02iBoPE).
+
+## Known Issues and Caveats
+Below is a list of any known issues and caveats.
+
+- Outlook will not have an signature on the very first launch but will after that
 
 ## Contributing
 Contributions are welcome! Please visit the [GitHub repository](https://github.com/CaptainQwerty/AutomatedOutlookSignature) to open an issue or submit a pull request.
@@ -124,10 +130,17 @@ This project is licensed under the MIT License. See the [LICENSE](https://github
 
 ## Changelog
 
+### [5.0.1] - In Development
+- Minor spelling mistakes fixed.
+- Completed the detailed description.
+- Added -ForceSignatureOnNewEmails and -ForceSignatureOnReplies launch parameters.
+- Default encoding swapped out for UTF-8 when -Encoding launch parameter not specified.
+- Neatened the HTML and TXT saving. 
+
 ### [5.0.0] - 20/05/2024
 - New script layout utilising functions to enhance readability.
 - Added support for verbose output.
-- Introduced parameters for script execiton. Website and CompanyName can be statically set as parameters.
+- Introduced parameters for script execution. Website and CompanyName can be statically set as parameters.
 - Refactored code to use a class for better structure and readability.
 - Improved compatibility with more versions of Office.
 - Removed group check example to reduce script run time.

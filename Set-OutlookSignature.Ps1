@@ -12,7 +12,15 @@ param (
     [ValidateNotNullOrEmpty()]
     [ValidateSet("ascii", "utf8", "unicode", "utf32")]
     [string]
-    $Encoding = "unicode"
+    $Encoding = "utf8",
+    [Parameter()]
+    [ValidateNotNullOrEmpty()]
+    [bool]
+    $ForceSignatureOnNewEmails = $true,
+    [Parameter()]
+    [ValidateNotNullOrEmpty()]
+    [bool]
+    $ForceSignatureOnReplies = $true
 )
 
 <#
@@ -20,32 +28,32 @@ param (
     Automated Outlook Signature
 
 .DESCRIPTION
-    Longer more detailed description
+    Using values from the users on-prem Active Directory account this script will create 
+    generate a HTML signature and set this signature as the users default signature for 
+    new emails and replies.  The HTML and CSS can be customised. 
 
 .NOTES
     Author           : CaptainQwerty
     Release Date     : 19/05/2024
-    Script Version   : 5.0.0
+    Script Version   : 5.0.1
     GitHub Repo      : https://github.com/CaptainQwerty/AutomatedOutlookSignature
     ReadMe           : https://github.com/CaptainQwerty/AutomatedOutlookSignature/blob/main/README.md
 #>
 
 <#-----[ Latest Patch Notes ]-----#
 
-Version 5.0.0
-    * New script layout utilising functions to help with readability
-    * Now Supports Verbose
-    * Support for paramaters with the script execution
-    * Now utilises a class to help with readability
-    * Fixed Office for more versions of Office
-    * Removed the group check example as this increases the scripts run time by too much
-    * encoding can be easily switch with a parameter 
+Version 5.0.1
+    * Minor spelling mistakes fixed.
+    * Completed the detailed description.
+    * Added -ForceSignatureOnNewEmails and -ForceSignatureOnReplies launch parameters.
+    * Default encoding swapped out for UTF-8 when -Encoding launch parameter not specified.
+    * Neatened the HTML and TXT saving. 
 
 #>
 
 # [ Configuration ]
 
-Write-Verbose "Version 5.0.0"
+Write-Verbose "Version 5.0.1"
 $logo = "https://example.com/logo.png"
 $folderLocation = Join-Path -Path $Env:appdata -ChildPath 'Microsoft\signatures'
 $fileName = 'Signature'
@@ -157,7 +165,15 @@ function Set-RegistryEntries {
         [Parameter(Mandatory = $true)]
         [string] $Version,
         [Parameter(Mandatory = $true)]
-        [string] $SignatureName
+        [string] $SignatureName,
+        [Parameter()]
+        [ValidateNotNullOrEmpty(Mandatory = $true)]
+        [bool]
+        $ForceSignatureOnNewEmails,
+        [Parameter()]
+        [ValidateNotNullOrEmpty(Mandatory = $true)]
+        [bool]
+        $ForceSignatureOnReplies
     )
 
     $regPathGeneral = "HKCU:\Software\Microsoft\Office\$Version\Common\General"
@@ -166,8 +182,8 @@ function Set-RegistryEntries {
 
     Write-Verbose "Setting registry keys"
     New-ItemProperty -Path $regPathGeneral -Name "Signatures" -Value "signatures" -PropertyType String -Force | Out-Null
-    New-ItemProperty -Path $regPathMailSettings -Name "NewSignature" -Value $SignatureName -PropertyType String -Force | Out-Null
-    New-ItemProperty -Path $regPathMailSettings -Name "ReplySignature" -Value $SignatureName -PropertyType String -Force | Out-Null
+    if($ForceSignatureOnNewEmails){ New-ItemProperty -Path $regPathMailSettings -Name "NewSignature" -Value $SignatureName -PropertyType String -Force | Out-Null }
+    if($ForceSignatureOnReplies){ New-ItemProperty -Path $regPathMailSettings -Name "ReplySignature" -Value $SignatureName -PropertyType String -Force | Out-Null }
 
     Write-Verbose "Removing First-Run registry key"
     Remove-ItemProperty -Path $regPathOutlookSetup -Name "First-Run" -ErrorAction SilentlyContinue | Out-Null
@@ -282,22 +298,16 @@ if (-not (Test-Path -Path $folderLocation)) {
 $htmlSignature = Get-SignatureHTML -user $user
 $plainTextSignature = Get-SignaturePlainText -user $user
 
-# Save the HTML to the signature file
+# Saving HTML and plain Text signatures
 try {
     Write-Verbose "Saving HTML signature"
     $style + $htmlSignature | Out-File -FilePath "$file.htm" -Encoding $Encoding
-} catch {
-    Write-Error "Error: Unable to save the HTML signature file. Details: $($_.Exception.Message)"
-    exit 1
-}
 
-# Output the text to the signatures folder
-try {
     Write-Verbose "Saving txt signature"
     $plainTextSignature | out-file "$file.txt" -encoding $Encoding
 } catch {
-    Write-Error "Error: Unable to save the text signature file. Details: $($_.Exception.Message)"
+    Write-Error "Error: Unable to save signature file. Details: $($_.Exception.Message)"
     exit 1
 }
 
-Set-RegistryEntries -Version $officeVersion -SignatureName $fileName
+Set-RegistryEntries -Version $officeVersion -SignatureName $fileName -ForceSignatureOnNewEmails $ForceSignatureOnNewEmails -ForceSignatureOnReplies $ForceSignatureOnReplies
