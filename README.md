@@ -9,6 +9,8 @@ The script retrieves user details from Active Directory, generates a new signatu
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/CaptainQwerty)
 
+[View the Changelog](docs/CHANGELOG.md)
+
 ## Table of Contents
 - [Features](#features)
 - [Usage](#usage)
@@ -129,24 +131,6 @@ This project is licensed under the MIT License. See the [LICENSE](https://github
 
 ## Acknowledgements
 - [EduGeek Forum](http://www.edugeek.net/forums/scripts/205976-outlook-email-signature-automation-ad-attributes.html#post1760284) for discussions and feedback.
-
-## Changelog
-
-### [5.0.1] - In Development
-- Minor spelling mistakes fixed.
-- Completed the detailed description.
-- Added -ForceSignatureOnNewEmails and -ForceSignatureOnReplies launch parameters.
-- Default encoding swapped out for UTF-8 when -Encoding launch parameter not specified.
-- Neatened the HTML and TXT saving. 
-
-### [5.0.0] - 20/05/2024
-- New script layout utilising functions to enhance readability.
-- Added support for verbose output.
-- Introduced parameters for script execution. Website and CompanyName can be statically set as parameters.
-- Refactored code to use a class for better structure and readability.
-- Improved compatibility with more versions of Office.
-- Removed group check example to reduce script run time.
-- Added a parameter to easily switch encoding.
 
 [contributors-shield]: https://img.shields.io/github/contributors/CaptainQwerty/AutomatedOutlookSignature.svg?style=for-the-badge
 [contributors-url]: https://github.com/CaptainQwerty/AutomatedOutlookSignature/graphs/contributors
