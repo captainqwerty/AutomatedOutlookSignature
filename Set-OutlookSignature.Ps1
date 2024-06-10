@@ -166,12 +166,12 @@ function Set-RegistryEntries {
         [string] $Version,
         [Parameter(Mandatory = $true)]
         [string] $SignatureName,
-        [Parameter()]
-        [ValidateNotNullOrEmpty(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [bool]
         $ForceSignatureOnNewEmails,
-        [Parameter()]
-        [ValidateNotNullOrEmpty(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [bool]
         $ForceSignatureOnReplies
     )
