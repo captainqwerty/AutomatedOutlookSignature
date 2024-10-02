@@ -10,7 +10,7 @@ param (
     $Website,
     [Parameter()]
     [ValidateNotNullOrEmpty()]
-    [ValidateSet("ascii", "utf8", "unicode", "utf32")]
+    [ValidateSet("ascii", "utf8nobom", "unicode", "utf32")]
     [string]
     $Encoding = "utf8",
     [Parameter()]
@@ -48,6 +48,7 @@ Version 5.0.1
     * Added -ForceSignatureOnNewEmails and -ForceSignatureOnReplies launch parameters.
     * Default encoding swapped out for UTF-8 when -Encoding launch parameter not specified.
     * Neatened the HTML and TXT saving. 
+    * Swapped UTF8 for utf8nobom to stop random character showing up on the new Outlook
 
 #>
 
